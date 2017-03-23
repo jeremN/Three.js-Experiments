@@ -181,56 +181,6 @@ function createGround(){
 
 }
 
-//Trees
-Trees = function(){
-
-	this.mesh = new THREE.Object3d();
-	this.trunk = new Trunk();
-	this.mesh.add( this.trunk.mesh );
-
-}
-
-Trunk = function(){
-
-	var tHeight = 50 + Math.random() * 150;
-	var topRradius = 1 + Math.random() * 5;
-	var bottomRadius = 5 + Math.random() * 5;
-	var mats = materials;
-	var matTrunk = blackMat;
-	var nHSegments = 3;
-	var nVSegments = 3;
-	var geom = new THREE.CylinderGeometry( topRradius, bottomRadius, tHeight, nHSegments, nVSegments );
-
-	geom.applyMatrix( new THREE.matrix4().makeTranslation( 0, tHeight / 2, 0 ) );
-
-	this.mesh = new THREE.Mesh( geom, matTrunk );
-
-	for( var i = 0; i  < geom.vertices.length; i++ ){
-
-		var v = geom.vertices[i];
-		var noise = Math.random() * Math.PI * 2;
-		var formula = -noise + Math.random() * noise;
-
-		v.x += formula;
-		v.y += formula;
-		v.z += formula;
-
-		geom.computeVertexNormals();
-	}
-
-	//Leaf
-	if ( Math.random() > .7 ){
-
-		var size = Math.random() * 3;
-		var geomLeaf = new THREE.CubeGeometry( size, size, size, 1 );
-		var matLeaf = greenMat;
-		var leaf = new THREE.Mesh( geomLeaf, matLeaf );
-
-		leaf.position.x = v.x;
-		leaf.position.y = v.y + 4;
-		leaf.position.y = v.y + 4;
-	}
-}
 
 function loop(){
 
