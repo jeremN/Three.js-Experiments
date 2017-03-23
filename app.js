@@ -208,8 +208,8 @@ Trunk = function(){
 	for( var i = 0; i  < geom.vertices.length; i++ ){
 
 		var v = geom.vertices[i];
-		var noise = Math.random() * Math.PI * 2;
-		var formula = -noise + Math.random() * noise;
+		var noise = Math.random() * Math.PI;
+		var formula = -noise + Math.random() * noise * 2;
 
 		v.x += formula;
 		v.y += formula;
@@ -228,8 +228,37 @@ Trunk = function(){
 
 		leaf.position.x = v.x;
 		leaf.position.y = v.y + 4;
-		leaf.position.y = v.y + 4;
+		leaf.position.z = v.z;
+		leaf.rotation.x = noise;
+		leaf.rotation.y = noise;
+	
+		this.mesh.add( leaf );
 	}
+
+	//Branch
+	if( Math.random() > .4  && v.y < tHeight - 10 ){
+
+		var h = 3 + Math.random() * 5;
+		var thickness = .2 + Math.random();
+		var geomBranch = new THREE.CylinderGeometry( thickness / 2, thickness, h, 3, 1);
+
+		geomBranch.applyMatrix( new THREE.Matrix4().makeTranslation( 0, h / 2, 2, 0) );
+
+		var branch = new THREE.Mesh( geomBranch, matTrunk );
+
+		branch.position.x = v.x;
+		branch.position.y = v.y;
+		branch.position.z = v.z;
+
+		var v = new THREE.Vector3( v.x, 2, v.z );
+		var axis = new THREE.Vector3( 0, 1, 0 );
+
+		branch.quaternion.setFromUnitVector( axis, v.clone().normalize() );
+
+		this.mesh.add( branch );
+	}
+
+	this.mesh.castShadow = true;
 }
 
 function loop(){
@@ -238,7 +267,7 @@ function loop(){
 	requestAnimationFrame( loop );
 }
 
-function init(){
+function init( event ){
 
 	createScene();
 	createLight();
@@ -247,6 +276,5 @@ function init(){
 	loop();
 }
 
-init();
 
-//window.addEventListener( "load", init, false );
+window.addEventListener( "load", init, false );
