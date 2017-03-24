@@ -23,7 +23,7 @@ var blackMat = new THREE.MeshPhongMaterial( {
 		shading: THREE.FlatShading
 		
 	} );
-var	greenMat = new THREE.MeshPhongMaterial( {
+var	greenMat = new THREE.MeshBasicMaterial( {
 
 		color: Colors.green,
 		
@@ -101,14 +101,14 @@ function createScene(){
 	nearPlane = 1;
 	farPlane = 2000;
 
-	camera = new THREE.PerspectiveCamera({
+	camera = new THREE.PerspectiveCamera(
 
 		fov,
 		aspectRatio,
 		nearPlane,
 		farPlane
 
-	});
+	);
 
 	camera.position.x = 0;
 	camera.position.y = 30;
@@ -153,9 +153,10 @@ function createLight(){
 	shadowLight.shadow.camera.top = 400;
 	shadowLight.shadow.camera.bottom = -400;
 	shadowLight.shadow.camera.near = 1;
-	shadowLight.shadow.camera.far = 3000;
+	shadowLight.shadow.camera.far = 2000;
 
-	shadowLight.shadow.mapSize.width = shadowLight.shadow.mapSize.height = 2048;
+	shadowLight.shadow.mapSize.width = 2048;
+	shadowLight.shadow.mapSize.height = 2048;
 	
 	scene.add( ambientLight );
 	scene.add( shadowLight );
@@ -178,7 +179,7 @@ function createGround(){
 		groundFloor.receiveShadow = true;
 
 		ground = new THREE.Group();
-		ground.position.y = -600;
+		ground.position.y = -200;
 
 		ground.add( groundShadow );
 		ground.add( groundFloor );
@@ -186,10 +187,51 @@ function createGround(){
 
 }
 
+//Background
+Forest = function(){
+
+	var fHeight = 200;
+	var tGeom = new THREE.CylinderGeometry( 2, 2, fHeight, 6, 1 );
+
+	tGeom.applyMatrix( new THREE.Matrix4().makeTranslation( 0, fHeight / 2, 0 ) );
+
+	this.mesh = new THREE.Mesh( tGeom, greenMat );
+	this.mesh.castShadow = true;
+}
+
+var fTrees = new THREE.Group();
+
+function createForest(){
+
+	var nTrees = 150;
+
+	for( var i = 0; i < nTrees; i++ ){
+
+		var p = i * ( Math.PI * 2 ) / nTrees;
+		var t = Math.PI / 2;
+
+		t += .25 + Math.random() * .3;
+
+		var newTrees = new Trees();
+
+		newTrees.mesh.position.x = Math.sin( t ) * Math.cos( p ) * 200;
+		newTrees.mesh.position.y = Math.sin( t ) * Math.cos( p ) * ( 200 - 10 );
+		newTrees.mesh.position.y = Math.sin( t ) * 200;
+
+		var v = newTrees.mesh.position.clone();
+		var a = new THREE.Vector3( 0, 1, 0 );
+
+		newTrees.mesh.quaternion.setFromUnitVectors( a, v.clone().normalize() );
+
+		ground.add( newTrees.mesh );
+	}
+}
+
+
 //Trees
 Trees = function(){
 
-	this.mesh = new THREE.Object3d();
+	this.mesh = new THREE.Object3D();
 	this.trunk = new Trunk();
 	this.mesh.add( this.trunk.mesh );
 
@@ -206,7 +248,7 @@ Trunk = function(){
 	var nVSegments = 3;
 	var geom = new THREE.CylinderGeometry( topRradius, bottomRadius, tHeight, nHSegments, nVSegments );
 
-	geom.applyMatrix( new THREE.matrix4().makeTranslation( 0, tHeight / 2, 0 ) );
+	geom.applyMatrix( new THREE.Matrix4().makeTranslation( 0, tHeight / 2, 0 ) );
 
 	this.mesh = new THREE.Mesh( geom, matTrunk );
 
@@ -258,7 +300,7 @@ Trunk = function(){
 		var v = new THREE.Vector3( v.x, 2, v.z );
 		var axis = new THREE.Vector3( 0, 1, 0 );
 
-		branch.quaternion.setFromUnitVector( axis, v.clone().normalize() );
+		branch.quaternion.setFromUnitVectors( axis, v.clone().normalize() );
 
 		this.mesh.add( branch );
 	}
@@ -277,9 +319,12 @@ function init( event ){
 	createScene();
 	createLight();
 	createGround();
+	createForest();
 
 	loop();
 }
 
+init();
 
-window.addEventListener( "load", init, false );
+
+//window.addEventListener( "load", init, false );
