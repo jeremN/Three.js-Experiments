@@ -493,8 +493,8 @@ Rabbit.prototype.jump = function(){
 	this.status = "jump";
 
 	var _this = this;
-	var tSpeed = 10 / speed;
-	var jHeight = 40;
+	var tSpeed = 20 / speed;
+	var jHeight = 60;
 
 	TweenMax.to( this.earL.rotation, tSpeed, { x: "+= .3", ease: Back.easeOut } );
 	TweenMax.to( this.earR.rotation, tSpeed, { x: "-= .3", ease: Back.easeOut } );
@@ -542,27 +542,27 @@ var fTrees = new THREE.Group();
 
 function createForest(){
 
-	var nTrees = 250;
+	var nTrees = 200;
 
 	for( var i = 0; i < nTrees; i++ ){
 
 		var p = i * ( Math.PI * 2 ) / nTrees;
 		var t = Math.PI / 2;
 
-		t += .25 + Math.random() * .3 ;
+		t += ( Math.random() > .05) ? .25 + Math.random() * .25 : - .35 -  Math.random() * .3 ;
 
-		var newTrees = new Trees();
+		var newTree = new Trees();
 
-		newTrees.mesh.position.x = Math.sin( t ) * Math.cos( p ) * 600;
-		newTrees.mesh.position.y = Math.sin( t ) * Math.sin( p ) * ( 600 - 10 );
-		newTrees.mesh.position.z = Math.cos( t ) * (Math.random() * 300 ) - 50 ;
+		newTree.mesh.position.x = Math.sin( t ) * Math.cos( p ) * 600;
+		newTree.mesh.position.y = Math.sin( t ) * Math.sin( p ) * ( 600 - 10 );
+		newTree.mesh.position.z = Math.cos( t ) * Math.sin( p ) * 300;
 
-		var v = newTrees.mesh.position.clone();
+		var v = newTree.mesh.position.clone();
 		var a = new THREE.Vector3( 0, 1, 0 );
 
-		newTrees.mesh.quaternion.setFromUnitVectors( a, v.clone().normalize() );
+		newTree.mesh.quaternion.setFromUnitVectors( a, v.clone().normalize() );
 
-		ground.add( newTrees.mesh );
+		ground.add( newTree.mesh );
 
 	}
 	
@@ -580,12 +580,12 @@ Trees = function(){
 Trunk = function(){
 
 	var tHeight = 90 + Math.random() * 400;
-	var topRradius = 1 + Math.random() * 5;
-	var bottomRadius = 5 + Math.random() * 5;
+	var topRradius = 1 + Math.random() * 8;
+	var bottomRadius = 5 + Math.random() * 12;
 	var mats = materials;
 	var matTrunk = blackMat;
-	var nHSegments = 3;
-	var nVSegments = 3;
+	var nHSegments = 8;
+	var nVSegments = 8;
 	var geom = new THREE.CylinderGeometry( topRradius, bottomRadius, tHeight, nHSegments, nVSegments );
 
 	geom.applyMatrix( new THREE.Matrix4().makeTranslation( 0, tHeight / 2, 0 ) );
@@ -607,48 +607,49 @@ Trunk = function(){
 
 		//console.log(tHeight);
 		//console.log(v.y);
-	}
 
-	//Branch
-	if( Math.random() > .1 && v.y > .1 && v.y < tHeight - 10 ){
+		//Branch
+		if( Math.random() > .5 && v.y > 10 && v.y < tHeight - 10 ){
 
-		var h = 30 + Math.random() * 50;
-		var thickness = 2 + Math.random();
-		var geomBranch = new THREE.CylinderGeometry( thickness / 2, thickness, h, 6, 1);
+			var h = Math.random() * 1.5 + Math.random() * 15;
+			var thickness = 2 + Math.random();
+			var geomBranch = new THREE.CylinderGeometry( thickness / 2, thickness, h, 6, 1);
 
-		geomBranch.applyMatrix( new THREE.Matrix4().makeTranslation( 0, h / 2, 0) );
+			geomBranch.applyMatrix( new THREE.Matrix4().makeTranslation( 0, h / 2, 0) );
 
 
-		var branch = new THREE.Mesh( geomBranch, matTrunk );
+			var branch = new THREE.Mesh( geomBranch, matTrunk );
 
-		branch.position.x = v.x;
-		branch.position.y = v.y + 90 + Math.random() * 10;
-		branch.position.z = v.z;
+			branch.position.x = v.x / 2;
+			branch.position.y = v.y;
+			branch.position.z = v.z / 2;
 
-		var v = new THREE.Vector3( v.x, 4, v.z );
-		var axis = new THREE.Vector3( 0, 1, 0 );
+			var v = new THREE.Vector3( v.x, 2, v.z );
+			var axis = new THREE.Vector3( 0, 1, 0 );
 
-		branch.quaternion.setFromUnitVectors( axis, v.clone().normalize() );
+			branch.quaternion.setFromUnitVectors( axis, v.clone().normalize() );
 
-		this.mesh.add( branch );
+			this.mesh.add( branch );
 
-	}
+		}
 
-	//Leaf
-	if ( Math.random() > .2 ){
+		//Leaf
+		if ( Math.random() > .8 ){
 
-		var size = 5 + Math.random() * 15;
-		var geomLeaf = new THREE.OctahedronGeometry( size, 1 );
-		var matLeaf = leafMat;
-		var leaf = new THREE.Mesh( geomLeaf, matLeaf );
+			var size = Math.random() * 20;
+			var geomLeaf = new THREE.OctahedronGeometry( size, 1 );
+			var matLeaf = leafMat;
+			var leaf = new THREE.Mesh( geomLeaf, matLeaf );
 
-		leaf.position.x = v.x + 1;
-		leaf.position.y = v.y + 90 + Math.random() * 10;
-		leaf.position.z = v.z + 5;
-		leaf.rotation.x = PInoise;
-		leaf.rotation.y = PInoise;
-	
-		this.mesh.add( leaf );
+			leaf.position.x = v.x;
+			leaf.position.y = v.y;
+			leaf.position.z = v.z;
+			leaf.rotation.x = PInoise;
+			leaf.rotation.y = PInoise;
+		
+			this.mesh.add( leaf );
+		}
+
 	}
 
 	this.mesh.castShadow = true;
