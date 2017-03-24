@@ -147,6 +147,7 @@ function createScene(){
 	//Create renderer
 	renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} );
 
+	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( gWidth, gHeight );
 	renderer.shadowMap.enabled = true;
 
@@ -399,6 +400,44 @@ Rabbit = function(){
 		}
 
 	});
+
+}
+
+Rabbit.prototype.run = function(){
+
+	var s = Math.sin( speed, maxSpeed );
+
+	this.runningCycle += delta * s * .7;
+	this.runningCycle = this.runningCycle %  (Math.PI * 2 );
+
+	var rC = this.runningCycle;
+
+	this.pawFR.rotation.x = Math.sin( rC ) * Math.PI / 4;
+	this.pawFR.position.y = -5.5 - Math.sin( rC );
+	this.pawFR.position.z = 7.5 + Math.cos( rC );
+
+	this.pawFL.rotation.x = Math.sin( rC + .5 ) * Math.PI / 4;	
+	this.pawFL.position.y = -5.5 - Math.sin( rC + 4 );	
+	this.pawFL.position.z = 7.5 + Math.cos( rC  );
+
+	this.pawBL.rotation.x = Math.sin( rC + 2 ) * Math.PI / 4;	
+	this.pawBL.position.y = -5.5 - Math.sin( rC + 3 );	
+	this.pawBL.position.z = -7.5 + Math.cos( rC + 3);
+
+	this.pawBR.rotation.x = Math.sin( rC + 2.5 ) * Math.PI / 4;	
+	this.pawBR.position.y = -5.5 - Math.sin( rC + 3.5 );	
+	this.pawBR.position.z = -7.5 + Math.cos( rC + 3.5 );	
+
+	this.torso.rotation.x = -.1 + Math.sin( -rC - 1 ) * .5;
+	this.torso.position.y = 3 - Math.sin( rC + Math.PI / 2 ) * 3;
+
+	this.head.rotation.x = -.1 + Math.sin( rC - 1 ) * .5;
+	this.head.position.y = 5 -Math.sin( rC + Math.PI / 2 ) * 2;
+
+	this.tail.rotation.x = .5 + Math.sin( rC - Math.PI / 2 );
+
+	this.eyeR.scale.y = .5 + Math.sin( rC + Math.PI ) * .5;
+
 
 }
 
