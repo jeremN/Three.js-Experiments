@@ -67,8 +67,7 @@ var scene,
 	renderer, container;
 
 /*Screen size*/	
-var	gWidth = window.innerWidth;
-var	gHeight = window.innerHeight; 
+var	gWidth, gHeight; 
 
 /*Utils*/
 var Bunny, Forest, Ground;
@@ -88,6 +87,9 @@ GAME
 //Create scene
 function createScene(){
 
+	gWidth = window.innerWidth;
+	gHeight = window.innerHeight; 
+
 	//Create scene
 	scene = new THREE.Scene();
 
@@ -97,7 +99,7 @@ function createScene(){
 	aspectRatio = gWidth / gHeight;
 	fov = 60;
 	nearPlane = 1;
-	farPlane = 10000;
+	farPlane = 2000;
 
 	camera = new THREE.PerspectiveCamera({
 
@@ -109,8 +111,8 @@ function createScene(){
 	});
 
 	camera.position.x = 0;
-	camera.position.y = 100;
-	camera.position.z = 200;
+	camera.position.y = 30;
+	camera.position.z = 100;
 
 	//Create renderer
 	renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} );
@@ -128,9 +130,12 @@ function createScene(){
 //Resize
 function windowResize(){
 
-		renderer.setSize( gWidth, gHeight );
-		camera.aspect = gWidth / gHeight;
-		camera.updateProjectionMatrix();
+	gWidth = window.innerWidth;
+	gHeight = window.innerHeight; 
+
+	renderer.setSize( gWidth, gHeight );
+	camera.aspect = gWidth / gHeight;
+	camera.updateProjectionMatrix();
 
 };
 
@@ -160,8 +165,8 @@ function createLight(){
 //Ground
 function createGround(){
 
-		var geomShadow = new THREE.SphereGeometry( 600, 60, 60 );
-		var geom = new THREE.SphereGeometry( 600, 60, 60 );
+		var geomShadow = new THREE.SphereGeometry( 200, 60, 60 );
+		var geom = new THREE.SphereGeometry( 200, 60, 60 );
 
 		var matShadow = greenMatShadow;
 		var mat = greenMat;
