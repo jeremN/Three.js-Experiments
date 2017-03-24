@@ -94,13 +94,17 @@ var materials = [
 var scene, 
 	ambientLight, shadowLight,
 	camera, fov, aspectRatio, nearPlane, farPlane,
-	renderer, container;
+	renderer, container,
+	camPosStart, camPosEnd;
 
 /*Screen size*/	
-var	gWidth, gHeight; 
+var	wWidth, wHeight; 
 
 /*Utils*/
 var Rabbit, Forest, Ground;
+var speed = 12; 
+var maxSpeed = 44;
+var delta = 0;
 
 /*Mouse position*/
 var mousePos = { 
@@ -117,8 +121,8 @@ GAME
 //Create scene
 function createScene(){
 
-	gWidth = window.innerWidth;
-	gHeight = window.innerHeight; 
+	wWidth = window.innerWidth;
+	wHeight = window.innerHeight; 
 
 	//Create scene
 	scene = new THREE.Scene();
@@ -126,10 +130,10 @@ function createScene(){
 	scene.fog = new THREE.Fog( 0xd6eae6, 150, 400 );
 
 	//Create camera
-	aspectRatio = gWidth / gHeight;
+	aspectRatio = wWidth / wHeight;
 	fov = 80;
 	nearPlane = 1;
-	farPlane = 3000;
+	farPlane = 4000;
 
 	camera = new THREE.PerspectiveCamera(
 
@@ -148,7 +152,7 @@ function createScene(){
 	renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} );
 
 	renderer.setPixelRatio( window.devicePixelRatio );
-	renderer.setSize( gWidth, gHeight );
+	renderer.setSize( wWidth, wHeight );
 	renderer.shadowMap.enabled = true;
 
 	container = document.getElementById( 'world' );
@@ -156,16 +160,20 @@ function createScene(){
 
 	window.addEventListener( 'resize', windowResize, false );
 
+	document.addEventListener( "mousedown", mouseEvent, false );
+	document.addEventListener( "keypress", keyEvent, false );
+
+
 };
 
 //Resize
 function windowResize(){
 
-	gWidth = window.innerWidth;
-	gHeight = window.innerHeight; 
+	wWidth = window.innerWidth;
+	wHeight = window.innerHeight; 
 
-	renderer.setSize( gWidth, gHeight );
-	camera.aspect = gWidth / gHeight;
+	renderer.setSize( wWidth, wHeight );
+	camera.aspect = wWidth / wHeight;
 	camera.updateProjectionMatrix();
 
 };
@@ -220,10 +228,26 @@ function createGround(){
 
 }
 
+function mouseEvent( event ){
+
+	//rabbit.run();
+	rabbit.jump();
+
+}
+
+function keyEvent( event ){
+
+	if( event.keyCode === 13 ){
+
+		rabbit.run();
+	}
+
+}
+
 Rabbit = function(){
 
-	//this.status = "run"
-	//this.runningCycle = 0;
+	this.status = "run"
+	this.runningCycle = 0;
 
 	this.mesh = new THREE.Group();
 	this.body = new THREE.Group();
@@ -315,7 +339,7 @@ Rabbit = function(){
 	this.pawFrontL.position.x = -this.pawFrontR.position.x;
 	this.pawFrontL.castShadow = true;
 
-	this.body.add( this.pawL );
+	this.body.add( this.pawFrontL );
 
 	geomBackPaw = new THREE.CubeGeometry( 2, 2, 6, 1 );
 
@@ -405,39 +429,90 @@ Rabbit = function(){
 
 Rabbit.prototype.run = function(){
 
-	var s = Math.sin( speed, maxSpeed );
+	this.status = "run";
+
+	var s = Math.min( speed, maxSpeed );
 
 	this.runningCycle += delta * s * .7;
-	this.runningCycle = this.runningCycle %  (Math.PI * 2 );
+	this.runningCycle = this.runningCycle %  ( Math.PI * 2 );
 
 	var rC = this.runningCycle;
 
-	this.pawFR.rotation.x = Math.sin( rC ) * Math.PI / 4;
-	this.pawFR.position.y = -5.5 - Math.sin( rC );
-	this.pawFR.position.z = 7.5 + Math.cos( rC );
+	var a = 4;
+	var d = .2;
 
-	this.pawFL.rotation.x = Math.sin( rC + .5 ) * Math.PI / 4;	
-	this.pawFL.position.y = -5.5 - Math.sin( rC + 4 );	
-	this.pawFL.position.z = 7.5 + Math.cos( rC  );
+	//Body
+	this.body.position.y = 6 + Math.sin( rC - Math.PI / 2 ) * a;
+	this.body.rotation.x = .2 + Math.sin( rC - Math.PI / 2 ) * a * .1;
 
-	this.pawBL.rotation.x = Math.sin( rC + 2 ) * Math.PI / 4;	
-	this.pawBL.position.y = -5.5 - Math.sin( rC + 3 );	
-	this.pawBL.position.z = -7.5 + Math.cos( rC + 3);
+	this.torso.rotation.x =  Math.sin( rC - Math.PI / 2 ) * a * .1;
+	this.torso.position.y =  7 + Math.sin( rC - Math.PI / 2 ) * a * .5;
 
-	this.pawBR.rotation.x = Math.sin( rC + 2.5 ) * Math.PI / 4;	
-	this.pawBR.position.y = -5.5 - Math.sin( rC + 3.5 );	
-	this.pawBR.position.z = -7.5 + Math.cos( rC + 3.5 );	
+	//Head
+	this.head.position.z = 2 + Math.sin( rC - Math.PI / 2 ) * a * .5;
+	this.head.position.y = 8 + Math.cos( rC - Math.PI / 2 ) * a * .7;
+	this.head.rotation.x = -.2 + Math.sin( rC + Math.PI ) * a * .1;
 
-	this.torso.rotation.x = -.1 + Math.sin( -rC - 1 ) * .5;
-	this.torso.position.y = 3 - Math.sin( rC + Math.PI / 2 ) * 3;
+	//Ears
+	this.earL.rotation.x = Math.cos(-Math.PI / 2 + rC ) * ( a * .2 );
+	this.earR.rotation.x = Math.cos( -Math.PI / 2 + .2 + rC ) * ( a * .3 );
 
-	this.head.rotation.x = -.1 + Math.sin( rC - 1 ) * .5;
-	this.head.position.y = 5 -Math.sin( rC + Math.PI / 2 ) * 2;
+	//Eyes
+	this.eyeR.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
+	this.eyeL.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
 
-	this.tail.rotation.x = .5 + Math.sin( rC - Math.PI / 2 );
+	//Tail
+	this.tail.rotation.x = Math.cos( Math.PI / 2 + rC ) * a * .3;
 
-	this.eyeR.scale.y = .5 + Math.sin( rC + Math.PI ) * .5;
+	//Paws
+	this.pawFrontR.position.y = 1 + Math.sin( rC ) * a ; 
+	this.pawFrontR.rotation.x = Math.cos( rC ) * Math.PI / 4;
+	this.pawFrontR.position.z = 6 - Math.cos( rC )* a * 2;
 
+	this.pawFrontL.position.y = 1 + Math.sin( d + rC ) * a; 
+	this.pawFrontL.rotation.x = Math.cos( rC ) * Math.PI / 4;
+	this.pawFrontL.position.z = 6 - Math.cos( d + rC ) * a * 2;
+
+	this.pawBackR.position.y = 1+ Math.sin( Math.PI + rC ) * a; 
+	this.pawBackR.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
+	this.pawBackR.position.z = -Math.cos( Math.PI + rC ) * a ; 
+
+	this.pawBackL.position.y = 1 + Math.sin( Math.PI + rC ) *  a ; 
+	this.pawBackL.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
+	this.pawBackL.position.z = -Math.cos( Math.PI + rC ) * a ; 
+	
+}
+
+Rabbit.prototype.jump = function(){
+
+	if( this.status === "jump" ){
+
+		return;
+	}
+
+	this.status = "jump";
+
+	var _this = this;
+	var tSpeed = 10 / speed;
+	var jHeight = 40;
+
+	TweenMax.to( this.earL.rotation, tSpeed, { x: "+= .3", ease: Back.easeOut } );
+	TweenMax.to( this.earR.rotation, tSpeed, { x: "-= .3", ease: Back.easeOut } );
+
+	TweenMax.to( this.pawFrontL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
+	TweenMax.to( this.pawFrontR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
+	TweenMax.to( this.pawBackL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
+	TweenMax.to( this.pawBackR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
+
+	TweenMax.to( this.tail.rotation, tSpeed, {x: "+= 1", ease: Back.easeOut } ); 
+
+	TweenMax.to( this.mesh.position, tSpeed / 2, { y: jHeight, ease: Power2.easeOut } );
+	TweenMax.to( this.mesh.position, tSpeed / 2, { y: 0, ease: Power4.easeIn, delay: tSpeed * .5, onComplete: function(){
+
+			_this.status = "run";
+
+		}
+	} );
 
 }
 
@@ -493,7 +568,6 @@ function createForest(){
 	
 }
 
-
 //Trees
 Trees = function(){
 
@@ -532,7 +606,7 @@ Trunk = function(){
 		geom.computeVertexNormals();
 
 		//console.log(tHeight);
-		console.log(v.y);
+		//console.log(v.y);
 	}
 
 	//Branch
