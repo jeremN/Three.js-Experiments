@@ -56,6 +56,7 @@ var	leafMat = new THREE.MeshPhongMaterial( {
 		color: Colors.leaf,
 		shininess: 0,
 		shading: THREE.FlatShading
+
 	} ); 
 var	beigeMat = new THREE.MeshPhongMaterial( {
 
@@ -101,7 +102,7 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground;
+var Rabbit, Forest, Ground, Eggs;
 var speed = 12; 
 var maxSpeed = 44;
 var delta = 0;
@@ -244,6 +245,7 @@ function keyEvent( event ){
 
 }
 
+//Rabbit
 Rabbit = function(){
 
 	this.status = "run"
@@ -525,6 +527,64 @@ function createRabbit(){
 
 }
 
+//Easter eggs
+Eggs = function(){
+
+	this.angle = 0;
+	this.mesh = new THREE.Group();
+
+	var geomEgg = new THREE.CylinderGeometry( 2, 3, 10, 4 , 2 );
+
+	geomEgg.vertices[6].x -= 2;
+	geomEgg.vertices[6].z -= 2;
+
+	this.body = new THREE.Mesh( geomEgg, chocolatMat );
+
+	var geomRuban = new THREE.CubeGeometry( 6, 10, 1 , 1 );
+
+	geomRuban.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 5, 0 ) );
+
+	geomRuban.vertices[1].x -= 1;
+	geomRuban.vertices[2].x -= 1;
+	geomRuban.vertices[6].x += 1;
+	geomRuban.vertices[7].x += 1;
+
+	/*this.ruban = new THREE.Mesh( geomRuban, bittersweetMat );
+
+	this.ruban.position.y = .1;
+	this.ruban.rotation.x = .5;
+	this.ruban.rotation.z = .5;*/
+
+
+	this.mesh.add( this.body );
+	//this.mesh.add( this.ruban );
+
+	this.body.traverse( function( object ){
+
+		if( object instanceof THREE.Mesh ){
+
+			object.castShadow = true;
+			object.receiveShadow = true;
+
+		}
+
+	} );
+}
+
+function createEggs(){
+
+	easterEgg = new Eggs();
+	scene.add( easterEgg.mesh );
+
+}
+
+function updateEggPos(){
+
+	easterEgg.mesh.rotation.y = Math.random() * 10;
+	easterEgg.mesh.position.y = /*-600 + Math.sin( 0 + easterEgg.angle ) * 600*/ 100;
+
+}
+
 //Background
 Forest = function(){
 
@@ -609,7 +669,7 @@ Trunk = function(){
 		//console.log(v.y);
 
 		//Branch
-		if( Math.random() > .5 && v.y > 10 && v.y < tHeight - 10 ){
+		if( Math.random() > .8 && v.y > 10 && v.y < tHeight - 10 ){
 
 			var h = Math.random() * 1.5 + Math.random() * 15;
 			var thickness = 2 + Math.random();
@@ -636,9 +696,9 @@ Trunk = function(){
 		//Leaf
 		if ( Math.random() > .8 ){
 
-			var size = Math.random() * 20;
+			var size = Math.random() * 15;
 			var geomLeaf = new THREE.OctahedronGeometry( size, 1 );
-			var matLeaf = leafMat;
+			var matLeaf = mats[ Math.floor( Math.random() * mats.length) ];
 			var leaf = new THREE.Mesh( geomLeaf, matLeaf );
 
 			leaf.position.x = v.x;
@@ -653,22 +713,34 @@ Trunk = function(){
 	}
 
 	this.mesh.castShadow = true;
+
 }
 
 function loop(){
 
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
+
 }
 
 function init( event ){
 
+	//Load Scene & Lights
 	createScene();
 	createLight();
+
+	//Load Ground & Forest background
 	createGround();
 	createForest();
-	createRabbit();
 
+	//Load Game props
+	createRabbit();
+	createEggs();
+
+	//Updates
+	updateEggPos();
+
+	//Render
 	loop();
 }
 
