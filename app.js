@@ -159,7 +159,7 @@ function createScene(){
 
 	window.addEventListener( 'resize', windowResize, false );
 
-	//document.addEventListener( "mousedown", mouseEvent, false );
+	document.addEventListener( "mousedown", mouseEvent, false );
 	//document.addEventListener( "keypress", keyEvent, false );
 
 	//timer = new THREE.Clock();
@@ -230,7 +230,6 @@ function createGround(){
 
 function mouseEvent( event ){
 
-	//rabbit.run();
 	rabbit.jump();
 
 }
@@ -256,7 +255,7 @@ function updateGroundRot(){
 //Rabbit
 Rabbit = function(){
 
-	this.status = "run";
+	this.status = "rabbitRun";
 	this.runningCycle = 0;
 
 	this.mesh = new THREE.Group();
@@ -439,7 +438,7 @@ Rabbit = function(){
 
 Rabbit.prototype.run = function(){
 
-	this.status = "run";
+	this.status = "rabbitRun";
 
 	var s = Math.min( speed, maxSpeed );
 
@@ -519,7 +518,7 @@ Rabbit.prototype.jump = function(){
 	TweenMax.to( this.mesh.position, tSpeed / 2, { y: jHeight, ease: Power2.easeOut } );
 	TweenMax.to( this.mesh.position, tSpeed / 2, { y: 0, ease: Power4.easeIn, delay: tSpeed * .5, onComplete: function(){
 
-			_this.status = "run";
+			_this.status = "rabbitRun";
 
 		}
 		
@@ -790,6 +789,11 @@ Trunk = function(){
 
 }
 
+//Particles
+
+
+//Obstacles
+
 //Game
 function loop(){
 
@@ -799,6 +803,16 @@ function loop(){
 
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
+
+	if( rabbit.status === "rabbitRun" ){
+
+		rabbit.run();
+	
+	}
+	else{
+
+		rabbit.nod();
+	}
 
 }
 
