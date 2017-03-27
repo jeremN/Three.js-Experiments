@@ -102,10 +102,10 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs;
+var Rabbit, Forest, Ground, Eggs, groundRotation, timer;
 var speed = 12; 
 var maxSpeed = 44;
-var delta = 0;
+var delta = Math.random();
 
 /*Mouse position*/
 var mousePos = { 
@@ -161,9 +161,10 @@ function createScene(){
 
 	window.addEventListener( 'resize', windowResize, false );
 
-	document.addEventListener( "mousedown", mouseEvent, false );
-	document.addEventListener( "keypress", keyEvent, false );
+	//document.addEventListener( "mousedown", mouseEvent, false );
+	//document.addEventListener( "keypress", keyEvent, false );
 
+	//timer = new THREE.Clock();
 
 };
 
@@ -242,6 +243,15 @@ function keyEvent( event ){
 
 		rabbit.run();
 	}
+
+}
+
+function updateGroundRot(){
+
+	groundRotation += delta * .05 * speed;
+	groundRotation = groundRotation % ( Math.PI * 2 );
+
+	ground.rotation.z = groundRotation;
 
 }
 
@@ -533,10 +543,16 @@ Eggs = function(){
 	this.angle = 0;
 	this.mesh = new THREE.Group();
 
-	var geomEgg = new THREE.CylinderGeometry( 2, 3, 10, 4 , 2 );
+	var geomEgg = new THREE.CylinderGeometry( 2, 2, 10, 4 , 2 );
 
-	geomEgg.vertices[6].x -= 2;
-	geomEgg.vertices[6].z -= 2;
+	geomEgg.vertices[4].x += 3;
+	geomEgg.vertices[4].z += 3;
+	geomEgg.vertices[5].x += 3;
+	geomEgg.vertices[5].z -= 3;
+	geomEgg.vertices[6].x -= 3;
+	geomEgg.vertices[6].z -= 3;
+	geomEgg.vertices[7].x -= 3;
+	geomEgg.vertices[7].z += 3;
 
 	this.body = new THREE.Mesh( geomEgg, chocolatMat );
 
@@ -549,15 +565,23 @@ Eggs = function(){
 	geomRuban.vertices[6].x += 1;
 	geomRuban.vertices[7].x += 1;
 
-	/*this.ruban = new THREE.Mesh( geomRuban, bittersweetMat );
+	this.rubanR = new THREE.Mesh( geomRuban, bittersweetMat );
 
-	this.ruban.position.y = .1;
-	this.ruban.rotation.x = .5;
-	this.ruban.rotation.z = .5;*/
+	this.rubanR.position.x = 1;
+	this.rubanR.position.y = 3;
+	this.rubanR.position.z = -1;
+	this.rubanR.rotation.z = -.7;
+
+	this.rubanL = this.rubanR.clone();
+
+	this.rubanL.scale.set( 1, .75, .5, 1 );
+	this.rubanL.position.x = -this.rubanR.position.x;
+	this.rubanL.rotation.z = -this.rubanR.rotation.z;
 
 
 	this.mesh.add( this.body );
-	//this.mesh.add( this.ruban );
+	this.mesh.add( this.rubanR );
+	this.mesh.add( this.rubanL );
 
 	this.body.traverse( function( object ){
 
@@ -580,8 +604,9 @@ function createEggs(){
 
 function updateEggPos(){
 
-	easterEgg.mesh.rotation.y = Math.random() * 10;
-	easterEgg.mesh.position.y = /*-600 + Math.sin( 0 + easterEgg.angle ) * 600*/ 100;
+	easterEgg.mesh.rotation.y += delta * 10;
+	easterEgg.mesh.position.y = -600 + Math.sin( 0 + easterEgg.angle ) * (600 + 50 );
+	//easterEgg.mesh.position.x = Math.cos( 600 + easterEgg.angle ) * 50;
 
 }
 
@@ -738,13 +763,13 @@ function init( event ){
 	createEggs();
 
 	//Updates
+	//delta = timer.getDelta();
 	updateEggPos();
 
 	//Render
 	loop();
+
 }
 
-init();
 
-
-//window.addEventListener( "load", init, false );
+window.addEventListener( "load", init, false );
