@@ -101,7 +101,7 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, groundRotation, timer;
+var Rabbit, Forest, Ground, Eggs, groundRotation, timer, distance;
 var speed = 12; 
 var maxSpeed = 44;
 var delta = Math.random();
@@ -247,10 +247,10 @@ function keyEvent( event ){
 
 function updateGroundRot(){
 
-	//groundRotation += delta * .05 * speed;
-	//groundRotation = 10 % ( Math.PI * 2 );
+	groundRotation += delta * .05 * speed;
+	groundRotation = 10 % ( Math.PI * 2 );
 
-	//ground.rotation.z += groundRotation / 500;
+	ground.rotation.z += groundRotation / 700;
 
 }
 
@@ -535,7 +535,7 @@ Rabbit.prototype.nod = function(){
 
 	var headRotY, 
 		earLRotX, earRRotX,
-		tailRotX, tailRotZ;
+		tailRotX, tailRotZ, 
 
 	//Head
 	headRotY = -Math.PI / 5 + Math.random() * Math.PI / 2;
@@ -549,15 +549,14 @@ Rabbit.prototype.nod = function(){
 	} );
 
 	//Tail
-	tailRotX = Math.PI / 4 + Math.random() * Math.PI / 4;
-	tailRotZ = tailRotX;
+	tailRotX = tailRotZ = Math.PI / 4 + Math.random() * Math.PI / 4;
 
 	TweenMax.to( this.tail.rotation, sP, { x: tailRotX, ease: Power4.easeInOut } );
 	TweenMax.to( this.tail.rotation, sP, { z: tailRotZ, ease: Power4.easeInOut } );
 
 
 	//Ears
-	earLRotX = earRRotX = Math.PI / 4 + Math.random() * Math.PI / 8; 
+	earLRotX = earRRotX = Math.PI / 8 + Math.random() * Math.PI / 8; 
 
 	TweenMax.to( this.earL.rotation, sP, { x: earLRotX, ease: Power4.easeInOut } );
 	TweenMax.to( this.earR.rotation, sP, { x: earRRotX, ease: Power4.easeInOut } );
@@ -567,6 +566,13 @@ Rabbit.prototype.nod = function(){
 
 		TweenMax.to( [ this.eyeR.scale, this.eyeL.scale ], sP / 10, {y: 0, ease: Power1.easeInOut, yoyo: true, repeat: 1 } );
 		
+	}
+
+	//Nose
+	if ( Math.random() > .2 ){
+
+		TweenMax.to( this.nose.scale, sP / 5, { y: .9, ease: Power1.easeInOut, yoyo: true, repeat: 3 } );
+
 	}
 
 }
@@ -683,8 +689,8 @@ function createForest(){
 		var newTree = new Trees();
 
 		newTree.mesh.position.x = Math.sin( t ) * Math.cos( p ) * 600;
-		newTree.mesh.position.y = Math.sin( t ) * Math.sin( p ) * ( 600 - 10 );
-		newTree.mesh.position.z = Math.cos( t ) * Math.sin( p ) * 300;
+		newTree.mesh.position.y = Math.sin( t ) * Math.sin( p ) * 590;
+		newTree.mesh.position.z = Math.cos( t ) * 200;
 
 		var v = newTree.mesh.position.clone();
 		var a = new THREE.Vector3( 0, 1, 0 );
@@ -789,7 +795,7 @@ Trunk = function(){
 function loop(){
 
 	//Updates
-	//updateGroundRot();
+	updateGroundRot();
 	//updateEggPos();
 
 	renderer.render( scene, camera );
@@ -833,5 +839,15 @@ function resetGame(){
 	gameStatus = "play";
 	rabbit.status = "run";
 	rabbit.nod();
+}
+
+function updateDistance(){
+
+	distance += delta * speed;
+
+	var d = distance / 2;
+
+	fieldDistance.innerHTML = Math.floor( d );
+
 }
 
