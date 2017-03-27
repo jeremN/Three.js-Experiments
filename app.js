@@ -15,7 +15,6 @@ var Colors = {
 	leaf: 0x496F5D,
 	white: 0xa49789
 
-
 };
 
 /*Materials*/
@@ -56,6 +55,7 @@ var	leafMat = new THREE.MeshPhongMaterial( {
 		color: Colors.leaf,
 		shininess: 0,
 		shading: THREE.FlatShading
+
 	} ); 
 var	beigeMat = new THREE.MeshPhongMaterial( {
 
@@ -82,7 +82,6 @@ var materials = [
 	brownMat,
 	greenMat,
 	blackMat,
-	greenMatShadow,
 	chocolatMat,
 	leafMat,
 	beigeMat,
@@ -101,10 +100,10 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground;
+var Rabbit, Forest, Ground, Eggs, groundRotation, timer, distance;
 var speed = 12; 
 var maxSpeed = 44;
-var delta = 0;
+var delta = Math.random();
 
 /*Mouse position*/
 var mousePos = { 
@@ -160,9 +159,10 @@ function createScene(){
 
 	window.addEventListener( 'resize', windowResize, false );
 
-	document.addEventListener( "mousedown", mouseEvent, false );
-	document.addEventListener( "keypress", keyEvent, false );
+	//document.addEventListener( "mousedown", mouseEvent, false );
+	//document.addEventListener( "keypress", keyEvent, false );
 
+	//timer = new THREE.Clock();
 
 };
 
@@ -244,9 +244,19 @@ function keyEvent( event ){
 
 }
 
+function updateGroundRot(){
+
+	groundRotation += delta * .05 * speed;
+	groundRotation = 10 % ( Math.PI * 2 );
+
+	ground.rotation.z += groundRotation / 700;
+
+}
+
+//Rabbit
 Rabbit = function(){
 
-	this.status = "run"
+	this.status = "run";
 	this.runningCycle = 0;
 
 	this.mesh = new THREE.Group();
@@ -512,7 +522,57 @@ Rabbit.prototype.jump = function(){
 			_this.status = "run";
 
 		}
+		
 	} );
+
+}
+
+Rabbit.prototype.nod = function(){
+
+	var _this = this;
+	var sP = .8 + Math.random();
+
+	var headRotY, 
+		earLRotX, earRRotX,
+		tailRotX, tailRotZ, 
+
+	//Head
+	headRotY = -Math.PI / 5 + Math.random() * Math.PI / 2;
+
+	TweenMax.to( this.head.rotation, sP, { y: headRotY, ease: Power4.easeInOut, onComplete: function(){
+
+			_this.nod();
+
+		}
+
+	} );
+
+	//Tail
+	tailRotX = tailRotZ = Math.PI / 4 + Math.random() * Math.PI / 4;
+
+	TweenMax.to( this.tail.rotation, sP, { x: tailRotX, ease: Power4.easeInOut } );
+	TweenMax.to( this.tail.rotation, sP, { z: tailRotZ, ease: Power4.easeInOut } );
+
+
+	//Ears
+	earLRotX = earRRotX = Math.PI / 8 + Math.random() * Math.PI / 8; 
+
+	TweenMax.to( this.earL.rotation, sP, { x: earLRotX, ease: Power4.easeInOut } );
+	TweenMax.to( this.earR.rotation, sP, { x: earRRotX, ease: Power4.easeInOut } );
+
+	//Eyes
+	if ( Math.random() > .8 ){
+
+		TweenMax.to( [ this.eyeR.scale, this.eyeL.scale ], sP / 10, {y: 0, ease: Power1.easeInOut, yoyo: true, repeat: 1 } );
+		
+	}
+
+	//Nose
+	if ( Math.random() > .2 ){
+
+		TweenMax.to( this.nose.scale, sP / 5, { y: .9, ease: Power1.easeInOut, yoyo: true, repeat: 3 } );
+
+	}
 
 }
 
@@ -522,10 +582,84 @@ function createRabbit(){
 	rabbit.mesh.rotation.y = Math.PI / 2;
 	
 	scene.add( rabbit.mesh );
+	rabbit.nod();
 
 }
 
-//Background
+//Eggs
+Eggs = function(){
+
+	this.angle = 0;
+	this.mesh = new THREE.Group();
+
+	var geomEgg = new THREE.CylinderGeometry( 2, 2, 10, 4 , 2 );
+
+	geomEgg.vertices[4].x += 3;
+	geomEgg.vertices[4].z += 3;
+	geomEgg.vertices[5].x += 3;
+	geomEgg.vertices[5].z -= 3;
+	geomEgg.vertices[6].x -= 3;
+	geomEgg.vertices[6].z -= 3;
+	geomEgg.vertices[7].x -= 3;
+	geomEgg.vertices[7].z += 3;
+
+	this.body = new THREE.Mesh( geomEgg, chocolatMat );
+
+	var geomRuban = new THREE.CubeGeometry( 6, 10, 1 , 1 );
+
+	geomRuban.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 5, 0 ) );
+
+	geomRuban.vertices[1].x -= 1;
+	geomRuban.vertices[2].x -= 1;
+	geomRuban.vertices[6].x += 1;
+	geomRuban.vertices[7].x += 1;
+
+	this.rubanR = new THREE.Mesh( geomRuban, bittersweetMat );
+
+	this.rubanR.position.x = 1;
+	this.rubanR.position.y = 3;
+	this.rubanR.position.z = -1;
+	this.rubanR.rotation.z = -.7;
+
+	this.rubanL = this.rubanR.clone();
+
+	this.rubanL.scale.set( 1, .75, .5, 1 );
+	this.rubanL.position.x = -this.rubanR.position.x;
+	this.rubanL.rotation.z = -this.rubanR.rotation.z;
+
+
+	this.mesh.add( this.body );
+	this.mesh.add( this.rubanR );
+	this.mesh.add( this.rubanL );
+
+	this.body.traverse( function( object ){
+
+		if( object instanceof THREE.Mesh ){
+
+			object.castShadow = true;
+			object.receiveShadow = true;
+
+		}
+
+	} );
+}
+
+function createEggs(){
+
+	easterEgg = new Eggs();
+	scene.add( easterEgg.mesh );
+
+}
+
+function updateEggPos(){
+
+	//easterEgg.mesh.rotation.y += delta * 10;
+	easterEgg.mesh.position.y = 50 + Math.random() * 50;
+	easterEgg.mesh.position.x = Math.random() * 50;
+
+}
+
+//Forest
 Forest = function(){
 
 	var fHeight = 600;
@@ -554,8 +688,8 @@ function createForest(){
 		var newTree = new Trees();
 
 		newTree.mesh.position.x = Math.sin( t ) * Math.cos( p ) * 600;
-		newTree.mesh.position.y = Math.sin( t ) * Math.sin( p ) * ( 600 - 10 );
-		newTree.mesh.position.z = Math.cos( t ) * Math.sin( p ) * 300;
+		newTree.mesh.position.y = Math.sin( t ) * Math.sin( p ) * 590;
+		newTree.mesh.position.z = Math.cos( t ) * 200;
 
 		var v = newTree.mesh.position.clone();
 		var a = new THREE.Vector3( 0, 1, 0 );
@@ -609,7 +743,7 @@ Trunk = function(){
 		//console.log(v.y);
 
 		//Branch
-		if( Math.random() > .5 && v.y > 10 && v.y < tHeight - 10 ){
+		if( Math.random() > .8 && v.y > 10 && v.y < tHeight - 10 ){
 
 			var h = Math.random() * 1.5 + Math.random() * 15;
 			var thickness = 2 + Math.random();
@@ -636,9 +770,9 @@ Trunk = function(){
 		//Leaf
 		if ( Math.random() > .8 ){
 
-			var size = Math.random() * 20;
+			var size = Math.random() * 15;
 			var geomLeaf = new THREE.OctahedronGeometry( size, 1 );
-			var matLeaf = leafMat;
+			var matLeaf = mats[ Math.floor( Math.random() * mats.length) ];
 			var leaf = new THREE.Mesh( geomLeaf, matLeaf );
 
 			leaf.position.x = v.x;
@@ -653,26 +787,74 @@ Trunk = function(){
 	}
 
 	this.mesh.castShadow = true;
+
 }
 
+//Game
 function loop(){
+
+	//Updates
+	updateGroundRot();
+	//updateEggPos();
 
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
+
 }
+
+window.addEventListener( "load", init, false );
 
 function init( event ){
 
+	//Load Scene & Lights
 	createScene();
 	createLight();
+
+	//Load Ground & Forest background
 	createGround();
 	createForest();
-	createRabbit();
 
+	//Load Game props
+	createRabbit();
+	createEggs();
+
+	//Test	
+	updateEggPos();
+
+	//Render
 	loop();
+
 }
 
-init();
+function resetGame(){
 
+	scene.add( rabbit.mesh );
 
-//window.addEventListener( "load", init, false );
+	rabbit.mesh.position.x = 0;
+	rabbit.mesh.position.y = 0;
+	rabbit.mesh.position.z = 0;
+
+	speed = 12;
+	gameStatus = "play";
+	rabbit.status = "run";
+	rabbit.nod();
+}
+
+function updateDistance(){
+
+	distance += delta * speed;
+
+	var d = distance / 2;
+
+	fieldDistance.innerHTML = Math.floor( d );
+
+}
+
+/*
+TODO
+
+Add score, add bonus - malus, add life, add gameover resetGame and replay, add highscore field and save name, add collision
+
+BONUS : add particles
+MAYBE : add monster?
+*/
