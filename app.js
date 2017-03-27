@@ -83,7 +83,6 @@ var materials = [
 	brownMat,
 	greenMat,
 	blackMat,
-	greenMatShadow,
 	chocolatMat,
 	leafMat,
 	beigeMat,
@@ -248,10 +247,10 @@ function keyEvent( event ){
 
 function updateGroundRot(){
 
-	groundRotation += delta * .05 * speed;
-	groundRotation = groundRotation % ( Math.PI * 2 );
+	//groundRotation += delta * .05 * speed;
+	//groundRotation = 10 % ( Math.PI * 2 );
 
-	ground.rotation.z = groundRotation;
+	//ground.rotation.z += groundRotation / 500;
 
 }
 
@@ -524,6 +523,7 @@ Rabbit.prototype.jump = function(){
 			_this.status = "run";
 
 		}
+		
 	} );
 
 }
@@ -604,9 +604,9 @@ function createEggs(){
 
 function updateEggPos(){
 
-	easterEgg.mesh.rotation.y += delta * 10;
-	easterEgg.mesh.position.y = -600 + Math.sin( 0 + easterEgg.angle ) * (600 + 50 );
-	//easterEgg.mesh.position.x = Math.cos( 600 + easterEgg.angle ) * 50;
+	//easterEgg.mesh.rotation.y += delta * 10;
+	easterEgg.mesh.position.y = 50 + Math.random() * 50;
+	easterEgg.mesh.position.x = Math.random() * 50;
 
 }
 
@@ -743,10 +743,16 @@ Trunk = function(){
 
 function loop(){
 
+	//Updates
+	//updateGroundRot();
+	//updateEggPos();
+
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
 
 }
+
+window.addEventListener( "load", init, false );
 
 function init( event ){
 
@@ -762,8 +768,7 @@ function init( event ){
 	createRabbit();
 	createEggs();
 
-	//Updates
-	//delta = timer.getDelta();
+	//Test	
 	updateEggPos();
 
 	//Render
@@ -771,5 +776,3 @@ function init( event ){
 
 }
 
-
-window.addEventListener( "load", init, false );
