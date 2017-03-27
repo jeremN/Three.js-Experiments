@@ -15,7 +15,6 @@ var Colors = {
 	leaf: 0x496F5D,
 	white: 0xa49789
 
-
 };
 
 /*Materials*/
@@ -587,7 +586,7 @@ function createRabbit(){
 
 }
 
-//Easter eggs
+//Eggs
 Eggs = function(){
 
 	this.angle = 0;
@@ -660,7 +659,7 @@ function updateEggPos(){
 
 }
 
-//Background
+//Forest
 Forest = function(){
 
 	var fHeight = 600;
@@ -851,3 +850,11 @@ function updateDistance(){
 
 }
 
+/*
+TODO
+
+Add score, add bonus - malus, add life, add gameover resetGame and replay, add highscore field and save name, add collision
+
+BONUS : add particles
+MAYBE : add monster?
+*/
