@@ -257,7 +257,7 @@ function updateGroundRot(){
 //Rabbit
 Rabbit = function(){
 
-	this.status = "run"
+	this.status = "run";
 	this.runningCycle = 0;
 
 	this.mesh = new THREE.Group();
@@ -528,12 +528,56 @@ Rabbit.prototype.jump = function(){
 
 }
 
+Rabbit.prototype.nod = function(){
+
+	var _this = this;
+	var sP = .8 + Math.random();
+
+	var headRotY, 
+		earLRotX, earRRotX,
+		tailRotX, tailRotZ;
+
+	//Head
+	headRotY = -Math.PI / 5 + Math.random() * Math.PI / 2;
+
+	TweenMax.to( this.head.rotation, sP, { y: headRotY, ease: Power4.easeInOut, onComplete: function(){
+
+			_this.nod();
+
+		}
+
+	} );
+
+	//Tail
+	tailRotX = Math.PI / 4 + Math.random() * Math.PI / 4;
+	tailRotZ = tailRotX;
+
+	TweenMax.to( this.tail.rotation, sP, { x: tailRotX, ease: Power4.easeInOut } );
+	TweenMax.to( this.tail.rotation, sP, { z: tailRotZ, ease: Power4.easeInOut } );
+
+
+	//Ears
+	earLRotX = earRRotX = Math.PI / 4 + Math.random() * Math.PI / 8; 
+
+	TweenMax.to( this.earL.rotation, sP, { x: earLRotX, ease: Power4.easeInOut } );
+	TweenMax.to( this.earR.rotation, sP, { x: earRRotX, ease: Power4.easeInOut } );
+
+	//Eyes
+	if ( Math.random() > .8 ){
+
+		TweenMax.to( [ this.eyeR.scale, this.eyeL.scale ], sP / 10, {y: 0, ease: Power1.easeInOut, yoyo: true, repeat: 1 } );
+		
+	}
+
+}
+
 function createRabbit(){
 
 	rabbit = new Rabbit();
 	rabbit.mesh.rotation.y = Math.PI / 2;
 	
 	scene.add( rabbit.mesh );
+	rabbit.nod();
 
 }
 
@@ -741,6 +785,7 @@ Trunk = function(){
 
 }
 
+//Game
 function loop(){
 
 	//Updates
@@ -774,5 +819,19 @@ function init( event ){
 	//Render
 	loop();
 
+}
+
+function resetGame(){
+
+	scene.add( rabbit.mesh );
+
+	rabbit.mesh.position.x = 0;
+	rabbit.mesh.position.y = 0;
+	rabbit.mesh.position.z = 0;
+
+	speed = 12;
+	gameStatus = "play";
+	rabbit.status = "run";
+	rabbit.nod();
 }
 
