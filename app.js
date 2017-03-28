@@ -99,7 +99,7 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, timer, distance, gameStatus;
+var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, windParticles, bonusParticles, timer, distance, gameStatus;
 var groundRotation = 0;
 var	delta = 0;
 var speed = 4; 
@@ -107,6 +107,8 @@ var maxSpeed = 44;
 var score = 0;
 var life = 4;
 var level = 1;
+var collideEgg = 10;
+var collideRock = 30;
 
 /*Mouse position*/
 var mousePos = { 
@@ -792,6 +794,57 @@ Trunk = function(){
 }
 
 //Particles
+bonusParticles = function(){
+
+	this.mesh = new THREE.Group();
+
+	var bigParticles = new THREE.CubeGeometry( 8, 8, 8, 1 );
+	var smallParticles = new THREE.CubeGeometry( 3, 3, 3, 1 );
+
+	this.particles = [];
+
+	for( var i = 0; i < 8; i++ ){
+
+		var particlesChoco = new THREE.Mesh( bigParticles, chocolatMat );
+		var particlesBitter = new THREE.Mesh( smallParticles, bittersweetMat );
+
+		this.particles.push( particlesChoco, particlesBitter );
+
+		this.mesh.add( particlesChoco );
+		this.mesh.add( particlesBitter );
+
+	}
+
+}
+
+bonusParticles.prototype.explode = function(){
+
+	var _this = this;
+	var eSpeed = .25;
+
+	for( var i = 0; i < this.particles.length; i++ ){
+
+		var formul = -50 + Math.random() * 100;
+		var pS = this.particles[i];
+
+		var tx = formul;
+		var ty = formul;
+		var tz = formul;
+
+		pS.position.set( 0, 0 ,0 );
+		pS.scale.set( .9, .9, .9 );
+		pS.visible = true;
+
+		var e = eSpeed + Math.random() * .25;
+
+		TweenMax.to( pS.position, e, {x: tx, y: ty, z:tz, ease: Power4.easeOut } );
+		TweenMax.to( pS.scale, e, { x: .05, y: .05, z: .05, ease: Power4.easeOut, onComplete: pS.visible = false, onCompleteParams: [pS] } );
+
+	}
+	
+}
+
+windParticles = function(){}
 
 
 //Obstacles
@@ -864,12 +917,12 @@ function createRock(){
 
 	obstacle.base.rotation.y = -Math.PI / 4;
 	obstacle.mesh.scale.set( 1.2, 1.2, 1.2 );
-	obstacle.mesh.position.y = 0;
-	obstacle.mesh.position.x = 0;
 
 	scene.add( obstacle.mesh ); 
 
 }
+
+function updateRockPos(){}
 
 //Game
 function loop(){
@@ -891,6 +944,8 @@ function loop(){
 		rabbit.nod();
 	}*/
 
+	var test = rabbit.status === "rabbitRun" ? rabbit.run() : rabbit.nod();
+
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
 
@@ -909,8 +964,8 @@ function init( event ){
 	createForest();
 
 	//Load Game props
-	//createRabbit();
-	//createEggs();
+	createRabbit();
+	createEggs();
 	createRock();
 
 	//Render
@@ -945,25 +1000,44 @@ function resetGame(){
 
 }
 
-function updateScore(){
+function updateScore(){}
 
-}
-
-function updateLife(){
-
-}
+function updateLife(){}
 
 function updateSpeed(){
 
 	if( speed >= maxSpeed ){
 
 		return;
+
 	}
 	else{
 
 		speed += 1;
 		level++;
+
 	}
+
+}
+
+function detectCollision(){
+
+	var rabEggCollide = rabbit.mesh.position.clone().sub( easterEgg.mesh.position.clone() );
+	var rabRockCollide = rabbit.mesh.position.clone().sub( obstacle.mesh.position.clone() );
+
+	if( rabEggCollide < collisionEgg ){
+
+		//Score ++
+
+
+	}
+
+	if( rabRockCollide < collideRock ){
+
+		//Life --
+
+	}
+
 }
 
 /*
