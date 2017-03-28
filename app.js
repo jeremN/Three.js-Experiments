@@ -1,5 +1,5 @@
 /**
-Variables
+VAR
 **/
 
 /*Colors*/
@@ -76,7 +76,6 @@ var	whiteMat = new THREE.MeshPhongMaterial( {
 		
 	} ); 
 
-
 var materials = [
 		
 	brownMat,
@@ -100,10 +99,12 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, groundRotation, timer, distance;
-var speed = 12; 
+var Rabbit, Forest, Ground, Eggs, timer, distance;
+var groundRotation = 0;
+var	delta = 0;
+var speed = 4; 
 var maxSpeed = 44;
-var delta = Math.random();
+var gameStatus;
 
 /*Mouse position*/
 var mousePos = { 
@@ -160,9 +161,8 @@ function createScene(){
 	window.addEventListener( 'resize', windowResize, false );
 
 	document.addEventListener( "mousedown", mouseEvent, false );
-	//document.addEventListener( "keypress", keyEvent, false );
 
-	//timer = new THREE.Clock();
+	timer = new THREE.Clock();
 
 };
 
@@ -173,6 +173,7 @@ function windowResize(){
 	wHeight = window.innerHeight; 
 
 	renderer.setSize( wWidth, wHeight );
+
 	camera.aspect = wWidth / wHeight;
 	camera.updateProjectionMatrix();
 
@@ -224,7 +225,7 @@ function createGround(){
 		ground.add( groundFloor );
 		scene.add( ground );
 
-		ground.rotation.z += 0.05;
+		//ground.rotation.z += 0.05;
 
 }
 
@@ -234,21 +235,12 @@ function mouseEvent( event ){
 
 }
 
-function keyEvent( event ){
-
-	if( event.keyCode === 13 ){
-
-		rabbit.run();
-	}
-
-}
-
 function updateGroundRot(){
 
 	groundRotation += delta * .05 * speed;
-	groundRotation = 10 % ( Math.PI * 2 );
+	groundRotation = groundRotation % ( Math.PI * 2 );
 
-	ground.rotation.z += groundRotation / 700;
+	ground.rotation.z = groundRotation;
 
 }
 
@@ -442,7 +434,7 @@ Rabbit.prototype.run = function(){
 
 	var s = Math.min( speed, maxSpeed );
 
-	this.runningCycle += delta * s * .7;
+	this.runningCycle += delta * s * .5;
 	this.runningCycle = this.runningCycle %  ( Math.PI * 2 );
 
 	var rC = this.runningCycle;
@@ -675,7 +667,7 @@ var fTrees = new THREE.Group();
 
 function createForest(){
 
-	var nTrees = 200;
+	var nTrees = 150;
 
 	for( var i = 0; i < nTrees; i++ ){
 
@@ -738,9 +730,6 @@ Trunk = function(){
 
 		geom.computeVertexNormals();
 
-		//console.log(tHeight);
-		//console.log(v.y);
-
 		//Branch
 		if( Math.random() > .8 && v.y > 10 && v.y < tHeight - 10 ){
 
@@ -769,7 +758,7 @@ Trunk = function(){
 		//Leaf
 		if ( Math.random() > .8 ){
 
-			var size = Math.random() * 15;
+			var size = Math.random() * 12;
 			var geomLeaf = new THREE.OctahedronGeometry( size, 1 );
 			var matLeaf = mats[ Math.floor( Math.random() * mats.length) ];
 			var leaf = new THREE.Mesh( geomLeaf, matLeaf );
@@ -794,15 +783,16 @@ Trunk = function(){
 
 //Obstacles
 
+
 //Game
 function loop(){
+
+	delta = timer.getDelta();
 
 	//Updates
 	updateGroundRot();
 	//updateEggPos();
 
-	renderer.render( scene, camera );
-	requestAnimationFrame( loop );
 
 	if( rabbit.status === "rabbitRun" ){
 
@@ -814,6 +804,8 @@ function loop(){
 		rabbit.nod();
 	}
 
+	renderer.render( scene, camera );
+	requestAnimationFrame( loop );
 }
 
 window.addEventListener( "load", init, false );
@@ -832,9 +824,6 @@ function init( event ){
 	createRabbit();
 	createEggs();
 
-	//Test	
-	updateEggPos();
-
 	//Render
 	loop();
 
@@ -852,6 +841,7 @@ function resetGame(){
 	gameStatus = "play";
 	rabbit.status = "run";
 	rabbit.nod();
+
 }
 
 function updateDistance(){
