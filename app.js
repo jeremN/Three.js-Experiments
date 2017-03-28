@@ -99,12 +99,14 @@ var scene,
 var	wWidth, wHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, timer, distance;
+var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, timer, distance, gameStatus;
 var groundRotation = 0;
 var	delta = 0;
 var speed = 4; 
 var maxSpeed = 44;
-var gameStatus;
+var score = 0;
+var life = 4;
+var level = 1;
 
 /*Mouse position*/
 var mousePos = { 
@@ -567,6 +569,11 @@ Rabbit.prototype.nod = function(){
 
 }
 
+Rabbit.prototype.sit = function(){
+
+
+}
+
 function createRabbit(){
 
 	rabbit = new Rabbit();
@@ -633,6 +640,7 @@ Eggs = function(){
 		}
 
 	} );
+
 }
 
 function createEggs(){
@@ -644,11 +652,16 @@ function createEggs(){
 
 function updateEggPos(){
 
-	//easterEgg.mesh.rotation.y += delta * 10;
+	easterEgg.mesh.rotation.y += delta * 4;
 	easterEgg.mesh.position.y = 50 + Math.random() * 50;
 	easterEgg.mesh.position.x = Math.random() * 50;
 
 }
+
+//Bonus Eggs
+goldEggs = function(){}
+
+function createGEggs(){}
 
 //Forest
 Forest = function(){
@@ -782,7 +795,81 @@ Trunk = function(){
 
 
 //Obstacles
+Rock = function(){
 
+
+	this.angle = 0;
+	this.status = "ready";
+
+	this.mesh = new THREE.Group();
+
+	var geomBase = new THREE.CubeGeometry( 9, 9, 9, 1 );
+	var geomMiddle = new THREE.CubeGeometry( 5, 5, 5, 1 );
+	var geomTop = new THREE.CubeGeometry( 3, 3, 3, 1 );
+
+	var geometry = [ geomBase, geomMiddle, geomTop ];
+	var size = 2 + Math.random() * 10;
+
+	geometry.forEach( function( y ){
+
+		for( var i = 0, l = y.vertices.length; i < l; i++ ){
+
+			if( Math.random() > .5 ){
+
+				y.vertices[i].x += size * -0.25 + Math.random() * size * 0.5;
+				y.vertices[i].y += size * -0.25 + Math.random() * size * 0.5;
+				y.vertices[i].z += size * -0.25 + Math.random() * size * 0.5;
+				
+			}
+			else{
+
+				y.vertices[i].x -= size * 0.25 + Math.random() * size * -0.5;
+				y.vertices[i].y -= size * 0.25 + Math.random() * size * -0.5;
+				y.vertices[i].z -= size * 0.25 + Math.random() * size * -0.5;
+
+			}
+
+		}
+
+	} );
+
+	this.base = new THREE.Mesh( geomBase, blackMat );
+
+	this.middle = new THREE.Mesh( geomMiddle, blackMat );
+	this.middle.position.y = 3;
+
+	this.top = new THREE.Mesh( geomTop, blackMat );
+	this.top.position.y = 1;
+
+	this.mesh.add( this.base );
+	this.base.add( this.middle );
+	this.middle.add( this.top );
+
+	this.mesh.traverse( function( object ) {
+
+		if( object instanceof THREE.Mesh ){
+
+			object.castShadow = true;
+			object.receiveShadow = true;
+
+		}
+
+	} );
+
+}
+
+function createRock(){
+
+	obstacle = new Rock();
+
+	obstacle.base.rotation.y = -Math.PI / 4;
+	obstacle.mesh.scale.set( 1.2, 1.2, 1.2 );
+	obstacle.mesh.position.y = 0;
+	obstacle.mesh.position.x = 0;
+
+	scene.add( obstacle.mesh ); 
+
+}
 
 //Game
 function loop(){
@@ -790,22 +877,23 @@ function loop(){
 	delta = timer.getDelta();
 
 	//Updates
-	updateGroundRot();
+	//updateGroundRot();
 	//updateEggPos();
 
 
-	if( rabbit.status === "rabbitRun" ){
+	/*if( rabbit.status === "rabbitRun" ){
 
-		rabbit.run();
+		//rabbit.run();
 	
 	}
 	else{
 
 		rabbit.nod();
-	}
+	}*/
 
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
+
 }
 
 window.addEventListener( "load", init, false );
@@ -821,12 +909,25 @@ function init( event ){
 	createForest();
 
 	//Load Game props
-	createRabbit();
-	createEggs();
+	//createRabbit();
+	//createEggs();
+	createRock();
 
 	//Render
 	loop();
 
+}
+
+function gameOver(){
+
+	gameStatus = "gameOver";
+
+	hero.sit();
+
+	TweenMax.to( camera.position, 3, { z: camPosEnd, y: 50 } );
+
+	eggs.mesh.visible = false;
+	obstacle.mesh.visible = false;
 }
 
 function resetGame(){
@@ -844,14 +945,25 @@ function resetGame(){
 
 }
 
-function updateDistance(){
+function updateScore(){
 
-	distance += delta * speed;
+}
 
-	var d = distance / 2;
+function updateLife(){
 
-	fieldDistance.innerHTML = Math.floor( d );
+}
 
+function updateSpeed(){
+
+	if( speed >= maxSpeed ){
+
+		return;
+	}
+	else{
+
+		speed += 1;
+		level++;
+	}
 }
 
 /*
@@ -861,4 +973,24 @@ Add score, add bonus - malus, add life, add gameover resetGame and replay, add h
 
 BONUS : add particles
 MAYBE : add monster?
+*/
+
+/*
+Detect browser compatibility
+	//From three.js doc, https://threejs.org/docs/index.html#Manual/Getting_Started/Detecting_WebGL_and_browser_compatibility
+
+	if ( Detector.webgl ) {
+
+	    init();
+	    animate();
+
+	} 
+	else {
+
+	    var warning = Detector.getWebGLErrorMessage();
+
+	    document.getElementById( 'container' ).appendChild( warning );
+
+	}
+
 */
