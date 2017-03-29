@@ -1045,7 +1045,7 @@ TODO
 
 Add score, add bonus - malus, add life, add gameover resetGame and replay, add highscore field and save name, add collision
 
-BONUS : add particles
+BONUS : add particles on start screen
 MAYBE : add monster?
 */
 
