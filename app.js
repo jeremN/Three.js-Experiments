@@ -1210,13 +1210,13 @@ function replay(){
 	TweenMax.to( rabbit.torso.rotation, 2, { x: 0, ease: Power4.easeOut } );
 	TweenMax.to( rabbit.ass.rotation, 2, { x: 0, ease: Power4.easeOut } );
 
-	TweenMax.to( rabbit.pawBackR.rotation, sP, { x: 0, ease: Power4.easeOut } );
-	TweenMax.to( rabbit.pawBackR.position, sP, { y: 0, ease: Power4.easeOut } );
-	TweenMax.to( rabbit.pawBackL.rotation, sP, { x: 0, ease: Power4.easeOut } );
-	TweenMax.to( rabbit.pawBackL.position, sP, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackR.rotation, 2, { x: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackR.position, 2, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackL.rotation, 2, { x: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackL.position, 2, { y: 0, ease: Power4.easeOut } );
 
-	TweenMax.to( rabbit.pawFrontR.position, sP, { y: 0, ease: Power4.easeOut } );
-	TweenMax.to( rabbit.pawFrontL.position, sP, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawFrontR.position, 2, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawFrontL.position, 2, { y: 0, ease: Power4.easeOut } );
 
 	TweenMax.to( camera.position, 3, { z: camPosStart, x: 0, y: 30, ease: Power4.easeInOut, onComplete: function(){
 
