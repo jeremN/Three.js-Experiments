@@ -13,7 +13,8 @@ var Colors = {
 	beige: 0xddd8c4,
 	bittersweet: 0xff6f59,
 	leaf: 0x496F5D,
-	white: 0xa49789
+	white: 0xa49789,
+	rock: 0xDDD1C7
 
 };
 
@@ -75,6 +76,12 @@ var	whiteMat = new THREE.MeshPhongMaterial( {
 		shading: THREE.FlatShading
 		
 	} ); 
+var rockMat = new THREE.MeshPhongMaterial( {
+
+		color: Colors.black,
+		shading: THREE.FlatShading
+
+	} );
 
 var materials = [
 		
@@ -84,7 +91,8 @@ var materials = [
 	chocolatMat,
 	leafMat,
 	beigeMat,
-	bittersweetMat
+	bittersweetMat,
+	rockMat
 
 ];
 
@@ -243,6 +251,8 @@ function createGround(){
 
 function mouseEvent( event ){
 
+	startField.className = "hide";
+
 	if( gameStatus === "play" ){
 
 		rabbit.jump();
@@ -251,7 +261,6 @@ function mouseEvent( event ){
 	else if( gameStatus === "readyToPlay" ){
 
 		replay();
-		//startField.style.display = "hidden";
 	}
 
 }
@@ -671,10 +680,10 @@ function createEggs(){
 
 function updateEggPos(){
 
-	easterEgg.mesh.rotation.y += delta * 4;
-	easterEgg.mesh.rotation.z = Math.PI/2 - ( 600 + easterEgg.angle );
-	easterEgg.mesh.position.y = -605 + Math.sin( 600 + easterEgg.angle ) * 690;
-	easterEgg.mesh.position.x = Math.cos( 600 + easterEgg.angle ) * 650;
+	easterEgg.mesh.rotation.y += delta * 12;
+	easterEgg.mesh.rotation.z = Math.PI / 2 - ( groundRotation + easterEgg.angle );
+	easterEgg.mesh.position.y = -605 + Math.sin( groundRotation + easterEgg.angle ) * 690;
+	easterEgg.mesh.position.x = Math.cos( groundRotation + easterEgg.angle ) * 650;
 
 }
 
@@ -906,12 +915,12 @@ Rock = function(){
 
 	} );
 
-	this.base = new THREE.Mesh( geomBase, blackMat );
+	this.base = new THREE.Mesh( geomBase, rockMat );
 
-	this.middle = new THREE.Mesh( geomMiddle, blackMat );
+	this.middle = new THREE.Mesh( geomMiddle, rockMat );
 	this.middle.position.y = 3;
 
-	this.top = new THREE.Mesh( geomTop, blackMat );
+	this.top = new THREE.Mesh( geomTop, rockMat );
 	this.top.position.y = 1;
 
 	this.mesh.add( this.base );
@@ -960,6 +969,7 @@ function updateRockPos(){
 	obstacle.mesh.rotation.z = groundRotation + obstacle.angle - Math.PI / 2;
 	obstacle.mesh.position.y = -605 + Math.sin( groundRotation + obstacle.angle ) * 605;
 	obstacle.mesh.position.x = Math.cos( groundRotation + obstacle.angle ) * 605;
+
 }
 
 //Game
@@ -1027,6 +1037,7 @@ function gameOver(){
 
 	eggs.mesh.visible = false;
 	obstacle.mesh.visible = false;
+
 }
 
 function resetGame(){
@@ -1042,7 +1053,9 @@ function resetGame(){
 	speed = 4;
 	gameStatus = "play";
 	rabbit.status = "run";
+
 	rabbit.nod();
+	updateSpeed();
 
 }
 
@@ -1059,8 +1072,7 @@ function updateScore(){
 
 	score += 10;
 
-	scoreField.innerHTML( score );
-
+	gameUI();
 
 }
 
@@ -1092,6 +1104,8 @@ function updateLife(){
 	} ); 
 
 	life -= 1;
+
+	gameUI();
 	
 }
 
@@ -1116,24 +1130,19 @@ function detectCollision(){
 	var rabEggCollide = rabbit.mesh.position.clone().sub( easterEgg.mesh.position.clone() );
 	var rabRockCollide = rabbit.mesh.position.clone().sub( obstacle.mesh.position.clone() );
 
-	if( rabEggCollide < collideEgg ){
+	if( rabEggCollide.length() < collideEgg ){
 
 		//Score ++
 		updateScore();
 
-
 	}
 
-	if( rabRockCollide < collideRock && obstacle.status != "shock" ){
+	if( rabRockCollide.length() < collideRock && obstacle.status != "shock" ){
 
 		//Life --
 		updateLife();
 
 	}
-
-}
-
-function gameUI(){
 
 }
 
@@ -1146,6 +1155,7 @@ function replay(){
 			resetGame();
 
 		} 
+
 	} );
 
 }
@@ -1154,6 +1164,7 @@ function gameUI(){
 
 	lifeField.innerHTML = life;
 	scoreField.innerHTML = score;
+
 }
 
 
