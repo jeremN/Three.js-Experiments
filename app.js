@@ -469,7 +469,7 @@ Rabbit.prototype.run = function(){
 		TweenMax.killTweensOf(this.ass.rotation);
 
 	}
-	
+
 	this.status = "rabbitRun";
 
 	var s = Math.min( speed, maxSpeed );
@@ -1201,6 +1201,22 @@ function detectCollision(){
 function replay(){
 
 	gameStatus = "prepareToPlay";
+
+	TweenMax.killTweensOf( rabbit.body.rotation );
+	TweenMax.killTweensOf( rabbit.torso.rotation );
+	TweenMax.killTweensOf( rabbit.ass.rotation );
+
+	TweenMax.to( rabbit.body.rotation, 2, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.torso.rotation, 2, { x: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.ass.rotation, 2, { x: 0, ease: Power4.easeOut } );
+
+	TweenMax.to( rabbit.pawBackR.rotation, sP, { x: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackR.position, sP, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackL.rotation, sP, { x: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawBackL.position, sP, { y: 0, ease: Power4.easeOut } );
+
+	TweenMax.to( rabbit.pawFrontR.position, sP, { y: 0, ease: Power4.easeOut } );
+	TweenMax.to( rabbit.pawFrontL.position, sP, { y: 0, ease: Power4.easeOut } );
 
 	TweenMax.to( camera.position, 3, { z: camPosStart, x: 0, y: 30, ease: Power4.easeInOut, onComplete: function(){
 

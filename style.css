@@ -64,6 +64,15 @@ h3{
   bottom: 2em;
 }
 
+.hide{
+  display: none;
+}
+
+.show{
+  display: block;
+  opacity: 1;
+}
+
 form{
   color: #ff6f59;
   position: relative;
