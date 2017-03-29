@@ -92,8 +92,9 @@ var materials = [
 var scene, 
 	ambientLight, shadowLight,
 	camera, fov, aspectRatio, nearPlane, farPlane,
-	renderer, container,
-	camPosStart, camPosEnd;
+	renderer, container;
+var	camPosStart = 150; 
+var camPosEnd = 250;
 
 /*Screen size*/	
 var	wWidth, wHeight; 
@@ -102,13 +103,18 @@ var	wWidth, wHeight;
 var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, windParticles, bonusParticles, timer, distance, gameStatus;
 var groundRotation = 0;
 var	delta = 0;
-var speed = 4; 
-var maxSpeed = 44;
+var speed = 2; 
+var maxSpeed = 22;
 var score = 0;
 var life = 4;
 var level = 1;
 var collideEgg = 10;
 var collideRock = 30;
+var scoreField = document.getElementById( "sField" );
+var	lifeField = document.getElementById( "lField" );
+var parent = document.getElementById( "startInstruction" );
+var startField = parent.getElementsByTagName( "p" );
+var fTrees = new THREE.Group();
 
 /*Mouse position*/
 var mousePos = { 
@@ -150,7 +156,9 @@ function createScene(){
 
 	camera.position.x = 0;
 	camera.position.y = 30;
-	camera.position.z = 150;
+	camera.position.z = camPosStart;
+
+	camera.lookAt( 0, 30, 0 );
 
 	//Create renderer
 	renderer = new THREE.WebGLRenderer( {alpha: true, antialias: true} );
@@ -235,13 +243,22 @@ function createGround(){
 
 function mouseEvent( event ){
 
-	rabbit.jump();
+	if( gameStatus === "play" ){
+
+		rabbit.jump();
+	
+	}
+	else if( gameStatus === "readyToPlay" ){
+
+		replay();
+		//startField.style.display = "hidden";
+	}
 
 }
 
 function updateGroundRot(){
 
-	groundRotation += delta * .05 * speed;
+	groundRotation += delta * .01 * speed;
 	groundRotation = groundRotation % ( Math.PI * 2 );
 
 	ground.rotation.z = groundRotation;
@@ -655,15 +672,11 @@ function createEggs(){
 function updateEggPos(){
 
 	easterEgg.mesh.rotation.y += delta * 4;
-	easterEgg.mesh.position.y = 50 + Math.random() * 50;
-	easterEgg.mesh.position.x = Math.random() * 50;
+	easterEgg.mesh.rotation.z = Math.PI/2 - ( 600 + easterEgg.angle );
+	easterEgg.mesh.position.y = -605 + Math.sin( 600 + easterEgg.angle ) * 690;
+	easterEgg.mesh.position.x = Math.cos( 600 + easterEgg.angle ) * 650;
 
 }
-
-//Bonus Eggs
-goldEggs = function(){}
-
-function createGEggs(){}
 
 //Forest
 Forest = function(){
@@ -677,8 +690,6 @@ Forest = function(){
 	this.mesh.castShadow = true;
 
 }
-
-var fTrees = new THREE.Group();
 
 function createForest(){
 
@@ -844,6 +855,15 @@ bonusParticles.prototype.explode = function(){
 	
 }
 
+function createBonusParticles(){
+
+	bParticles = new bonusParticles();
+	bParticles.mesh.visible = false;
+
+	scene.add( bParticles.mesh );
+
+}
+
 windParticles = function(){}
 
 
@@ -922,7 +942,25 @@ function createRock(){
 
 }
 
-function updateRockPos(){}
+function updateRockPos(){
+
+	if( obstacle.status === "shock" ){
+
+		return;
+	
+	}
+
+	if( groundRotation + obstacle.angle > 2 ){
+
+		obstacle.angle = - groundRotation + Math.random() * .5;
+		obstacle.base.rotation.y = Math.random() * Math.PI * 2;
+
+	}
+
+	obstacle.mesh.rotation.z = groundRotation + obstacle.angle - Math.PI / 2;
+	obstacle.mesh.position.y = -605 + Math.sin( groundRotation + obstacle.angle ) * 605;
+	obstacle.mesh.position.x = Math.cos( groundRotation + obstacle.angle ) * 605;
+}
 
 //Game
 function loop(){
@@ -930,28 +968,31 @@ function loop(){
 	delta = timer.getDelta();
 
 	//Updates
-	//updateGroundRot();
-	//updateEggPos();
+	updateGroundRot();
 
+	if( gameStatus === "play" ){
 
-	/*if( rabbit.status === "rabbitRun" ){
+		if( rabbit.status === "rabbitRun" ){
 
-		//rabbit.run();
-	
+			rabbit.run();
+		
+		}
+		else{
+
+			rabbit.nod();
+		}
+
+		updateSpeed();
+		updateEggPos();
+		updateRockPos();
+		detectCollision();
+
 	}
-	else{
-
-		rabbit.nod();
-	}*/
-
-	var test = rabbit.status === "rabbitRun" ? rabbit.run() : rabbit.nod();
 
 	renderer.render( scene, camera );
 	requestAnimationFrame( loop );
 
 }
-
-window.addEventListener( "load", init, false );
 
 function init( event ){
 
@@ -967,6 +1008,9 @@ function init( event ){
 	createRabbit();
 	createEggs();
 	createRock();
+	createBonusParticles();
+	resetGame();
+	gameUI();
 
 	//Render
 	loop();
@@ -989,20 +1033,67 @@ function resetGame(){
 
 	scene.add( rabbit.mesh );
 
+	//startField.style.display = "block";
+
 	rabbit.mesh.position.x = 0;
 	rabbit.mesh.position.y = 0;
 	rabbit.mesh.position.z = 0;
 
-	speed = 12;
+	speed = 4;
 	gameStatus = "play";
 	rabbit.status = "run";
 	rabbit.nod();
 
 }
 
-function updateScore(){}
+function updateScore(){
 
-function updateLife(){}
+	bonusParticles.mesh.position.copy( easterEgg.mesh.position );
+	bonusParticles.mesh.visible = true;
+
+	bonusParticles.explode();
+
+	easterEgg.angle += Math.PI / 2;
+
+	groundFloor.rotation.z += 0.005;
+
+	score += 10;
+
+	scoreField.innerHTML( score );
+
+
+}
+
+function updateLife(){
+
+	obstacle.status = "shock";
+
+	var tX = (Math.random() > .5 ) ? -30 - Math.random() * 10 : 30 + Math.random() * 4;
+	var tY = Math.random() * 40;
+	var rX = Math.PI * 4;
+	var rY = Math.PI * 8;
+
+	TweenMax.to( obstacle.mesh.position, 3, { x: tX, y: tY, z: 300, ease: Power4.easeOut } );
+	TweenMax.to( obstacle.mesh.rotation, 3, { x: rX, y: rY, z: rX, ease: Power4.easeOut, onComplete: function(){
+
+		obstacle.status = "ready";
+		obstacle.body.rotation.y = Math.random() * Math.PI * 2;
+		obstacle.angle = -600 - Math.random() * .5;
+
+		obstacle.angle = obstacle.angle % ( Math.PI * 2 );
+
+		obstacle.mesh.rotation.x = 0;
+		obstacle.mesh.rotation.y = 0;
+		obstacle.mesh.rotation.z = 0;
+		obstacle.mesh.position.z = 0;
+
+		} 
+
+	} ); 
+
+	life -= 1;
+	
+}
 
 function updateSpeed(){
 
@@ -1025,20 +1116,48 @@ function detectCollision(){
 	var rabEggCollide = rabbit.mesh.position.clone().sub( easterEgg.mesh.position.clone() );
 	var rabRockCollide = rabbit.mesh.position.clone().sub( obstacle.mesh.position.clone() );
 
-	if( rabEggCollide < collisionEgg ){
+	if( rabEggCollide < collideEgg ){
 
 		//Score ++
+		updateScore();
 
 
 	}
 
-	if( rabRockCollide < collideRock ){
+	if( rabRockCollide < collideRock && obstacle.status != "shock" ){
 
 		//Life --
+		updateLife();
 
 	}
 
 }
+
+function gameUI(){
+
+}
+
+function replay(){
+
+	gameStatus = "prepareToPlay";
+
+	TweenMax.to( camera.position, 3, { z: camPosStart, x: 0, y: 30, ease: Power4.easeInOut, onComplete: function(){
+
+			resetGame();
+
+		} 
+	} );
+
+}
+
+function gameUI(){
+
+	lifeField.innerHTML = life;
+	scoreField.innerHTML = score;
+}
+
+
+window.addEventListener( "load", init, false );
 
 /*
 TODO
