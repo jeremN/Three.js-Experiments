@@ -13,6 +13,7 @@
     <title>Bunny -THREE.js exercice</title>
 
     <!-- Custom CSS -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 
 </head>
@@ -21,6 +22,89 @@
     <div id="world" class="container">
         
     </div>
+
+    <div id="gameUI" class="container">
+
+        <div id="fields" class="row">
+            
+            <div id="life" class="column-6 stacked">
+                <h3><small>Life</small></h3>
+                <h3>4</h3>
+            </div>
+
+            <div id="score" class="column-6 stacked">
+                <h3><small>Score</small></h3>
+                <h3>0000</h3>
+            </div>
+
+        </div>
+
+        <div id="over" class="row">
+            
+            <div id="gameOver" class="column-6 centered">
+               <h1>GAME OVER</h1> 
+            </div>
+
+            <form id="highscore" class="column-6 centered">
+                <label for="inputLastname">Enter your name: </label>
+                <input id="inputLastname" type="text" name="lastname">
+                <button type="submit">Send</button>
+            </form>
+            
+            <table id="scoreTable" class="column-6 centered">
+                <thead>
+                    <tr>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Score
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            AAA
+                        </td>
+                        <td>
+                            9999
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            AAA
+                        </td>
+                        <td>
+                            9999
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            AAA
+                        </td>
+                        <td>
+                            9999
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <div id="help" class="row bottom">
+            
+            <div id="instructions" class="column-6 centered">
+                <p>Grab the chocolat, avoid the obstacle. Click to jump.</p>
+            </div>
+            <div id="startInstruction" class="column-6 centered">
+                <p>Click to start</p>
+            </div>
+
+        </div>
+
+    </div>
+
     
     <!--Jquery CDN-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>

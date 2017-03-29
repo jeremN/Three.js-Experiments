@@ -3,17 +3,135 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  font-family: 'Montserrat', arial, helvetica, sans-serif;
+  color: #2c363f;
+  font-size: 16px;
 }
 
-canvas { 
-  width: 100%; 
-  height: 100%;
-}
 
 .container{
-	position: absolute; 
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	background: linear-grandient(#496F5D, #a3c9a8);
+  position: absolute; 
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: linear-grandient(#496F5D, #a3c9a8);
+}
+
+  canvas { 
+    width: 100%; 
+    height: 100%;
+  }
+
+  .row{
+    width: 100%;
+  }
+
+    .column-6{
+      text-align: center;
+      width: 50%;
+    }
+
+h1{
+  color: #ff6f59;
+  font-size: 8rem;
+  opacity: .9;
+  margin-top: 2em;
+}
+
+h3{
+  font-size: 2rem;
+  margin: 0;
+}
+  
+  h3 small{
+    font-size: 1.25rem;
+  }
+
+  h3:not(small){
+    color: #ff6f59;
+  }
+
+.centered{
+  margin: 0 auto;
+}
+
+.stacked{
+  float: left;
+}
+
+.bottom{
+  position: absolute;
+  bottom: 2em;
+}
+
+form{
+  color: #ff6f59;
+  position: relative;
+  bottom: -8em;
+}
+
+  label,
+  input,
+  button{
+    background: none;
+    border: 0;
+    color: #39aeaa;
+  }
+
+  label {
+    font-size: 1.15rem;
+  }
+
+  input{
+    background: none;
+    border-bottom: 1px solid #39aeaa;
+    font-size: 2rem;
+  }
+
+    input:focus{
+      outline-color: #39aeaa;
+    }
+
+  button{
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+#over{
+  opacity: 0;
+  display: none;
+  transition: all ease-in-out .25s;
+}
+
+  #over.isVisible{
+    opacity: 1;
+    display: block;
+  }
+
+#startInstruction{
+
+}
+
+#startInstruction p{
+  animation-name: flash;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  -webkit-animation-name: flash;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-fill-mode: both;
+  -webkit-animation-iteration-count: infinite;
+}
+
+@keyframes flash{
+  
+  from, 50%, to{
+    opacity: 1;
+  }
+
+  25%, 75%{
+    opacity: 0;
+  }
+
 }
