@@ -105,10 +105,11 @@ var	camPosStart = 150;
 var camPosEnd = 230;
 
 /*Screen size*/	
-var	wWidth, wHeight; 
+var	wWidth = window.innerWidth;
+var	wHeight = window.innerHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, windParticles, bonusParticles, timer, distance, gameStatus, sInterval, nameField;
+var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, windParticles, bonusParticles, foliageParticles, timer, distance, gameStatus, sInterval, nameField;
 var groundRotation = 0;
 var	delta = 0;
 var speed = 4; 
@@ -118,6 +119,7 @@ var life = 4;
 var level = 1;
 var collideEgg = 20;
 var collideRock = 10;
+var fEmitter = 32;
 var scoreField = document.getElementById( "sField" );
 var	lifeField = document.getElementById( "lField" );
 var gameOverField = document.getElementById( "gameOver" );
@@ -126,6 +128,7 @@ var startField = parent.getElementsByTagName( "p" );
 var fTrees = new THREE.Group();
 var freq = 3500;
 var saveScore = {};
+var particles = [];
 
 /*Mouse position*/
 var mousePos = { 
@@ -916,9 +919,6 @@ function createBonusParticles(){
 
 }
 
-windParticles = function(){}
-
-
 //Obstacles
 Rock = function(){
 
@@ -1018,19 +1018,19 @@ function loop(){
 	delta = timer.getDelta();
 
 	//Updates
-	updateGroundRot();
+	//updateGroundRot();
 
 	if( gameStatus === "play" ){
 
 		if( rabbit.status === "rabbitRun" ){
 
-			rabbit.run();
+			//rabbit.run();
 		
 		}
 		
 		//Updates
-		updateEggPos();
-		updateRockPos();
+		//updateEggPos();
+		//updateRockPos();
 		updateGameStatus();
 		detectCollision();
 
@@ -1244,6 +1244,10 @@ function gameUI(){
 	scoreField.innerHTML = score;
 
 }
+
+function saveScore(){}
+
+function getScore(){}
 
 
 window.addEventListener( "load", init, false );
