@@ -124,7 +124,7 @@ var collideRock = 10;
 var fEmitter = 32;
 var scoreField = document.getElementById( "sField" );
 var	lifeField = document.getElementById( "lField" );
-var gameOverField = document.getElementById( "gameOver" );
+var gameOverField = document.getElementById( "over" );
 var parent = document.getElementById( "startInstruction" );
 var startField = parent.getElementsByTagName( "p" );
 var fTrees = new THREE.Group();
@@ -458,182 +458,182 @@ Rabbit = function(){
 
 }
 
-Rabbit.prototype.run = function(){
+	Rabbit.prototype.run = function(){
 
-	if ( this.status === "sit" ){
+		if ( this.status === "sit" ){
 
-		TweenMax.killTweensOf(this.body.rotation);
-		TweenMax.killTweensOf(this.torso.rotation);
-		TweenMax.killTweensOf(this.ass.rotation);
-
-	}
-
-	this.status = "rabbitRun";
-
-	var s = Math.min( speed, maxSpeed );
-
-	this.runningCycle += delta * s * .5;
-	this.runningCycle = this.runningCycle %  ( Math.PI * 2 );
-
-	var rC = this.runningCycle;
-
-	var a = 4;
-	var d = .2;
-
-	//Body
-	this.body.position.y = 6 + Math.sin( rC - Math.PI / 2 ) * a;
-	this.body.rotation.x = .2 + Math.sin( rC - Math.PI / 2 ) * a * .1;
-
-	this.torso.rotation.x =  Math.sin( rC - Math.PI / 2 ) * a * .1;
-	this.torso.position.y =  7 + Math.sin( rC - Math.PI / 2 ) * a * .5;
-
-	//Head
-	this.head.position.z = 2 + Math.sin( rC - Math.PI / 2 ) * a * .5;
-	this.head.position.y = 8 + Math.cos( rC - Math.PI / 2 ) * a * .7;
-	this.head.rotation.x = -.2 + Math.sin( rC + Math.PI ) * a * .1;
-
-	//Ears
-	this.earL.rotation.x = Math.cos(-Math.PI / 2 + rC ) * ( a * .2 );
-	this.earR.rotation.x = Math.cos( -Math.PI / 2 + .2 + rC ) * ( a * .3 );
-
-	//Eyes
-	this.eyeR.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
-	this.eyeL.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
-
-	//Tail
-	this.tail.rotation.x = Math.cos( Math.PI / 2 + rC ) * a * .3;
-
-	//Paws
-	this.pawFrontR.position.y = 1 + Math.sin( rC ) * a ; 
-	this.pawFrontR.rotation.x = Math.cos( rC ) * Math.PI / 4;
-	this.pawFrontR.position.z = 6 - Math.cos( rC )* a * 2;
-
-	this.pawFrontL.position.y = 1 + Math.sin( d + rC ) * a; 
-	this.pawFrontL.rotation.x = Math.cos( rC ) * Math.PI / 4;
-	this.pawFrontL.position.z = 6 - Math.cos( d + rC ) * a * 2;
-
-	this.pawBackR.position.y = 1+ Math.sin( Math.PI + rC ) * a; 
-	this.pawBackR.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
-	this.pawBackR.position.z = -Math.cos( Math.PI + rC ) * a ; 
-
-	this.pawBackL.position.y = 1 + Math.sin( Math.PI + rC ) *  a ; 
-	this.pawBackL.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
-	this.pawBackL.position.z = -Math.cos( Math.PI + rC ) * a ; 
-	
-}
-
-Rabbit.prototype.jump = function(){
-
-	if( this.status === "jump" ) return;
-
-	this.status = "jump";
-
-	var _this = this;
-	var tSpeed = 20 / speed;
-	var jHeight = 60;
-
-	TweenMax.to( this.earL.rotation, tSpeed, { x: "+= .3", ease: Back.easeOut } );
-	TweenMax.to( this.earR.rotation, tSpeed, { x: "-= .3", ease: Back.easeOut } );
-
-	TweenMax.to( this.pawFrontL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
-	TweenMax.to( this.pawFrontR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
-	TweenMax.to( this.pawBackL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
-	TweenMax.to( this.pawBackR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
-
-	TweenMax.to( this.tail.rotation, tSpeed, {x: "+= 1", ease: Back.easeOut } ); 
-
-	TweenMax.to( this.mesh.position, tSpeed / 2, { y: jHeight, ease: Power2.easeOut } );
-	TweenMax.to( this.mesh.position, tSpeed / 2, { y: 0, ease: Power4.easeIn, delay: tSpeed * .5, onComplete: function(){
-
-			_this.status = "rabbitRun";
-
-		}
-		
-	} );
-
-}
-
-Rabbit.prototype.nod = function(){
-
-	if( this.status === "rabbitRun" ){
-
-		TweenMax.killTweensOf( this.head.rotation );
-	}
-
-
-	var _this = this;
-	var sP = .8 + Math.random();
-
-	var headRotY, 
-		earLRotX, earRRotX,
-		tailRotX, tailRotZ, 
-
-	//Head
-	headRotY = -Math.PI / 5 + Math.random() * Math.PI / 2;
-
-	TweenMax.to( this.head.rotation, sP, { y: headRotY, ease: Power4.easeInOut, onComplete: function(){
-
-			_this.nod();
+			TweenMax.killTweensOf(this.body.rotation);
+			TweenMax.killTweensOf(this.torso.rotation);
+			TweenMax.killTweensOf(this.ass.rotation);
 
 		}
 
-	} );
+		this.status = "rabbitRun";
 
-	//Tail
-	tailRotX = tailRotZ = Math.PI / 4 + Math.random() * Math.PI / 4;
+		var s = Math.min( speed, maxSpeed );
 
-	TweenMax.to( this.tail.rotation, sP, { x: tailRotX, ease: Power4.easeInOut } );
-	TweenMax.to( this.tail.rotation, sP, { z: tailRotZ, ease: Power4.easeInOut } );
+		this.runningCycle += delta * s * .5;
+		this.runningCycle = this.runningCycle %  ( Math.PI * 2 );
 
+		var rC = this.runningCycle;
 
-	//Ears
-	earLRotX = earRRotX = Math.PI / 8 + Math.random() * Math.PI / 8; 
+		var a = 4;
+		var d = .2;
 
-	TweenMax.to( this.earL.rotation, sP, { x: earLRotX, ease: Power4.easeInOut } );
-	TweenMax.to( this.earR.rotation, sP, { x: earRRotX, ease: Power4.easeInOut } );
+		//Body
+		this.body.position.y = 6 + Math.sin( rC - Math.PI / 2 ) * a;
+		this.body.rotation.x = .2 + Math.sin( rC - Math.PI / 2 ) * a * .1;
 
-	//Eyes
-	if ( Math.random() > .8 ){
+		this.torso.rotation.x =  Math.sin( rC - Math.PI / 2 ) * a * .1;
+		this.torso.position.y =  7 + Math.sin( rC - Math.PI / 2 ) * a * .5;
 
-		TweenMax.to( [ this.eyeR.scale, this.eyeL.scale ], sP / 10, {y: 0, ease: Power1.easeInOut, yoyo: true, repeat: 1 } );
+		//Head
+		this.head.position.z = 2 + Math.sin( rC - Math.PI / 2 ) * a * .5;
+		this.head.position.y = 8 + Math.cos( rC - Math.PI / 2 ) * a * .7;
+		this.head.rotation.x = -.2 + Math.sin( rC + Math.PI ) * a * .1;
+
+		//Ears
+		this.earL.rotation.x = Math.cos(-Math.PI / 2 + rC ) * ( a * .2 );
+		this.earR.rotation.x = Math.cos( -Math.PI / 2 + .2 + rC ) * ( a * .3 );
+
+		//Eyes
+		this.eyeR.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
+		this.eyeL.scale.y = .7 +  Math.abs( Math.cos( -Math.PI / 4 + rC * .5) ) * .6;
+
+		//Tail
+		this.tail.rotation.x = Math.cos( Math.PI / 2 + rC ) * a * .3;
+
+		//Paws
+		this.pawFrontR.position.y = 1 + Math.sin( rC ) * a ; 
+		this.pawFrontR.rotation.x = Math.cos( rC ) * Math.PI / 4;
+		this.pawFrontR.position.z = 6 - Math.cos( rC )* a * 2;
+
+		this.pawFrontL.position.y = 1 + Math.sin( d + rC ) * a; 
+		this.pawFrontL.rotation.x = Math.cos( rC ) * Math.PI / 4;
+		this.pawFrontL.position.z = 6 - Math.cos( d + rC ) * a * 2;
+
+		this.pawBackR.position.y = 1+ Math.sin( Math.PI + rC ) * a; 
+		this.pawBackR.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
+		this.pawBackR.position.z = -Math.cos( Math.PI + rC ) * a ; 
+
+		this.pawBackL.position.y = 1 + Math.sin( Math.PI + rC ) *  a ; 
+		this.pawBackL.rotation.x = Math.cos( rC + Math.PI * 1.5 ) * Math.PI / 2;
+		this.pawBackL.position.z = -Math.cos( Math.PI + rC ) * a ; 
 		
 	}
 
-	//Nose
-	if ( Math.random() > .2 ){
+	Rabbit.prototype.jump = function(){
 
-		TweenMax.to( this.nose.scale, sP / 5, { y: .9, ease: Power1.easeInOut, yoyo: true, repeat: 3 } );
+		if( this.status === "jump" ) return;
+
+		this.status = "jump";
+
+		var _this = this;
+		var tSpeed = 20 / speed;
+		var jHeight = 60;
+
+		TweenMax.to( this.earL.rotation, tSpeed, { x: "+= .3", ease: Back.easeOut } );
+		TweenMax.to( this.earR.rotation, tSpeed, { x: "-= .3", ease: Back.easeOut } );
+
+		TweenMax.to( this.pawFrontL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
+		TweenMax.to( this.pawFrontR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
+		TweenMax.to( this.pawBackL.rotation, tSpeed, { x:"+= .7", ease: Back.easeOut } );
+		TweenMax.to( this.pawBackR.rotation, tSpeed, { x:"-= .7", ease: Back.easeOut } );
+
+		TweenMax.to( this.tail.rotation, tSpeed, {x: "+= 1", ease: Back.easeOut } ); 
+
+		TweenMax.to( this.mesh.position, tSpeed / 2, { y: jHeight, ease: Power2.easeOut } );
+		TweenMax.to( this.mesh.position, tSpeed / 2, { y: 0, ease: Power4.easeIn, delay: tSpeed * .5, onComplete: function(){
+
+				_this.status = "rabbitRun";
+
+			}
+			
+		} );
 
 	}
 
-}
+	Rabbit.prototype.nod = function(){
 
-Rabbit.prototype.sit = function(){
+		if( this.status === "rabbitRun" ){
 
-	var _this = this;
-	var sP = 1.2;
-	this.status = "sit";
+			TweenMax.killTweensOf( this.head.rotation );
+		}
 
-	TweenMax.to( this.body.rotation, sP, { y: -.7, ease: Power4.easeOut } );
-	TweenMax.to( this.torso.rotation, sP, { x: -.4, ease: Power4.easeOut } );
-	TweenMax.to( this.ass.rotation, sP, { x: .5, ease: Power4.easeOut, onComplete: function(){
 
-			_this.nod();
-			gameStatus = "readyToPlay";
+		var _this = this;
+		var sP = .8 + Math.random();
 
-		} 
+		var headRotY, 
+			earLRotX, earRRotX,
+			tailRotX, tailRotZ, 
 
-	} );
+		//Head
+		headRotY = -Math.PI / 5 + Math.random() * Math.PI / 2;
 
-	TweenMax.to( this.pawBackR.rotation, sP, { x: -4, ease: Power4.easeOut } );
-	TweenMax.to( this.pawBackR.position, sP, { y: 1, ease: Power4.easeOut } );
-	TweenMax.to( this.pawBackL.rotation, sP, { x: -4, ease: Power4.easeOut } );
-	TweenMax.to( this.pawBackL.position, sP, { y: 1, ease: Power4.easeOut } );
+		TweenMax.to( this.head.rotation, sP, { y: headRotY, ease: Power4.easeInOut, onComplete: function(){
 
-	TweenMax.to( this.pawFrontR.position, sP, { y: .5, ease: Power4.easeOut } );
-	TweenMax.to( this.pawFrontL.position, sP, { y: .5, ease: Power4.easeOut } );
+				_this.nod();
 
-}
+			}
+
+		} );
+
+		//Tail
+		tailRotX = tailRotZ = Math.PI / 4 + Math.random() * Math.PI / 4;
+
+		TweenMax.to( this.tail.rotation, sP, { x: tailRotX, ease: Power4.easeInOut } );
+		TweenMax.to( this.tail.rotation, sP, { z: tailRotZ, ease: Power4.easeInOut } );
+
+
+		//Ears
+		earLRotX = earRRotX = Math.PI / 8 + Math.random() * Math.PI / 8; 
+
+		TweenMax.to( this.earL.rotation, sP, { x: earLRotX, ease: Power4.easeInOut } );
+		TweenMax.to( this.earR.rotation, sP, { x: earRRotX, ease: Power4.easeInOut } );
+
+		//Eyes
+		if ( Math.random() > .8 ){
+
+			TweenMax.to( [ this.eyeR.scale, this.eyeL.scale ], sP / 10, {y: 0, ease: Power1.easeInOut, yoyo: true, repeat: 1 } );
+			
+		}
+
+		//Nose
+		if ( Math.random() > .2 ){
+
+			TweenMax.to( this.nose.scale, sP / 5, { y: .9, ease: Power1.easeInOut, yoyo: true, repeat: 3 } );
+
+		}
+
+	}
+
+	Rabbit.prototype.sit = function(){
+
+		var _this = this;
+		var sP = 1.2;
+		this.status = "sit";
+
+		TweenMax.to( this.body.rotation, sP, { y: -.7, ease: Power4.easeOut } );
+		TweenMax.to( this.torso.rotation, sP, { x: -.4, ease: Power4.easeOut } );
+		TweenMax.to( this.ass.rotation, sP, { x: .5, ease: Power4.easeOut, onComplete: function(){
+
+				_this.nod();
+				gameStatus = "readyToPlay";
+
+			} 
+
+		} );
+
+		TweenMax.to( this.pawBackR.rotation, sP, { x: -4, ease: Power4.easeOut } );
+		TweenMax.to( this.pawBackR.position, sP, { y: 1, ease: Power4.easeOut } );
+		TweenMax.to( this.pawBackL.rotation, sP, { x: -4, ease: Power4.easeOut } );
+		TweenMax.to( this.pawBackL.position, sP, { y: 1, ease: Power4.easeOut } );
+
+		TweenMax.to( this.pawFrontR.position, sP, { y: .5, ease: Power4.easeOut } );
+		TweenMax.to( this.pawFrontL.position, sP, { y: .5, ease: Power4.easeOut } );
+
+	}
 
 function createRabbit(){
 
@@ -870,32 +870,32 @@ bonusParticles = function(){
 
 }
 
-bonusParticles.prototype.explode = function(){
+	bonusParticles.prototype.explode = function(){
 
-	var _this = this;
-	var eSpeed = .25;
+		var _this = this;
+		var eSpeed = .25;
 
-	for( var i = 0; i < this.particles.length; i++ ){
+		for( var i = 0; i < this.particles.length; i++ ){
 
-		var formul = -50 + Math.random() * 100;
-		var pS = this.particles[i];
+			var formul = -50 + Math.random() * 100;
+			var pS = this.particles[i];
 
-		var tx = formul;
-		var ty = formul;
-		var tz = formul;
+			var tx = formul;
+			var ty = formul;
+			var tz = formul;
 
-		pS.position.set( 0, 0 ,0 );
-		pS.scale.set( .9, .9, .9 );
-		pS.visible = true;
+			pS.position.set( 0, 0 ,0 );
+			pS.scale.set( .9, .9, .9 );
+			pS.visible = true;
 
-		var e = eSpeed + Math.random() * .25;
+			var e = eSpeed + Math.random() * .25;
 
-		TweenMax.to( pS.position, e, {x: tx, y: ty, z:tz, ease: Power4.easeOut } );
-		TweenMax.to( pS.scale, e, { x: .05, y: .05, z: .05, ease: Power4.easeOut, onComplete: hideParticles, onCompleteParams: [pS] } );
+			TweenMax.to( pS.position, e, {x: tx, y: ty, z:tz, ease: Power4.easeOut } );
+			TweenMax.to( pS.scale, e, { x: .05, y: .05, z: .05, ease: Power4.easeOut, onComplete: hideParticles, onCompleteParams: [pS] } );
 
+		}
+		
 	}
-	
-}
 
 function hideParticles( p ){
 
@@ -1011,19 +1011,19 @@ function loop(){
 	delta = timer.getDelta();
 
 	//Updates
-	//updateGroundRot();
+	updateGroundRot();
 
 	if( gameStatus === "play" ){
 
 		if( rabbit.status === "rabbitRun" ){
 
-			//rabbit.run();
+			rabbit.run();
 		
 		}
 		
 		//Updates
-		//updateEggPos();
-		//updateRockPos();
+		updateEggPos();
+		updateRockPos();
 		updateGameStatus();
 		detectCollision();
 
@@ -1040,7 +1040,7 @@ function render(){
 
 }
 
-function init( event ){
+function initGame( event ){
 
 	//Load Scene & Lights
 	createScene();
@@ -1069,6 +1069,12 @@ function gameOver(){
 	gameOverField.className = "show";
 	gameStatus = "gameOver";
 
+	var submitScore = document.getElementById( "highscore ");
+
+	showScoreList();
+
+	submitScore.addEventListener( "submit", saveScore );
+
 	//rabbit.sit();
 	rabbit.sit();
 
@@ -1085,8 +1091,6 @@ function gameOver(){
 function resetGame(){
 
 	scene.add( rabbit.mesh );
-
-	//startField.style.display = "block";
 
 	rabbit.mesh.rotation.y = Math.PI / 2;
 	rabbit.mesh.position.x = 0;
@@ -1305,7 +1309,7 @@ function showScoreList(){
 function launchScreen(){};
 
 
-window.addEventListener( "load", init, false );
+window.addEventListener( "load", initGame, false );
 
 /*
 TODO
@@ -1318,7 +1322,24 @@ TODO
 
 BONUS : add particles on start screen, detect browser compatibility
 
-REORGANIZE CODE => with launch, init etc... functions
+REORGANIZE CODE =>
+
+		//Var
+
+		//Scene
+
+		//Light
+
+		//Props
+
+		//Models
+
+		//Update
+
+		//Utils
+
+		//Launch
+
 */
 
 /*
