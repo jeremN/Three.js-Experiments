@@ -109,7 +109,9 @@ var	wWidth = window.innerWidth;
 var	wHeight = window.innerHeight; 
 
 /*Utils*/
-var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, windParticles, bonusParticles, foliageParticles, timer, distance, gameStatus, sInterval, nameField;
+var Rabbit, Forest, Ground, Eggs, goldEggs, Rock, 
+	windParticles, bonusParticles, 
+	timer, distance, gameStatus, sInterval;
 var groundRotation = 0;
 var	delta = 0;
 var speed = 4; 
@@ -127,8 +129,6 @@ var parent = document.getElementById( "startInstruction" );
 var startField = parent.getElementsByTagName( "p" );
 var fTrees = new THREE.Group();
 var freq = 3500;
-var saveScore = {};
-var particles = [];
 
 /*Mouse position*/
 var mousePos = { 
@@ -144,9 +144,6 @@ GAME
 
 //Create scene
 function createScene(){
-
-	wWidth = window.innerWidth;
-	wHeight = window.innerHeight; 
 
 	//Create scene
 	scene = new THREE.Scene();
@@ -193,10 +190,7 @@ function createScene(){
 };
 
 //Resize
-function windowResize(){
-
-	wWidth = window.innerWidth;
-	wHeight = window.innerHeight; 
+function windowResize(){ 
 
 	renderer.setSize( wWidth, wHeight );
 
@@ -640,7 +634,6 @@ Rabbit.prototype.sit = function(){
 	TweenMax.to( this.pawFrontL.position, sP, { y: .5, ease: Power4.easeOut } );
 
 }
-
 
 function createRabbit(){
 
@@ -1245,9 +1238,71 @@ function gameUI(){
 
 }
 
-function saveScore(){}
+function saveScore(){
 
-function getScore(){}
+	var finalScore = score,
+		nameField = document.getElementById( "inputLastname" ).value;
+
+	saveScore = {
+
+		name: nameField,
+		hScore: finalScore
+
+	};
+
+	var gameScore = getScore();
+
+	gameScore.push( saveScore );
+
+	localStorage.setItem( 'CatchTheEgg', JSON.stringify( gameScore ) );
+
+	showScoreList();
+
+	return false;
+
+};
+
+function getScore(){
+
+	var gameScore = [];
+
+		gameScore_str = localStorage.getItem( 'CatchTheEgg' );
+
+
+	if( gameScore_str != null ){
+
+		gameScore = JSON.parse( gameScore_str );
+
+	}
+
+	return gameScore;
+
+};
+
+function showScoreList(){
+
+	var gameScore = getScore(),
+		scoreTable = document.getElementById( "scoreTable" ),
+		insertScore = scoreTable.getElementsByTagName( "tbody" ),
+		tD;
+
+	gameScore.sort( function( a, b ){
+
+		return b - a;
+
+	} );
+
+	for( var i = 0; i < gameScore.length; i++ ){
+
+		tD += "<tr id='" + [i] + "'> <td>" + gameScore[i].name + "</td> <td>" + gameScore[i].hScore + "</td> </tr>";
+
+	}
+
+	insertScore.innerHTML = tD;
+
+}
+
+function launchScreen(){};
 
 
 window.addEventListener( "load", init, false );
