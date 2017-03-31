@@ -117,7 +117,7 @@ var	delta = 0;
 var speed = 4; 
 var maxSpeed = 60;
 var score = 0;
-var life = 4;
+var life = 1;
 var level = 1;
 var collideEgg = 20;
 var collideRock = 10;
@@ -127,6 +127,7 @@ var	lifeField = document.getElementById( "lField" );
 var gameOverField = document.getElementById( "over" );
 var parent = document.getElementById( "startInstruction" );
 var startField = parent.getElementsByTagName( "p" );
+var submitName = document.getElementById( "subName" );
 var fTrees = new THREE.Group();
 var freq = 3500;
 
@@ -251,10 +252,10 @@ function createGround(){
 
 function mouseEvent( event ){
 
-	startField.className = "hide";
 
 	if( gameStatus === "play" ){
 
+		startField.className = "hide";
 		rabbit.jump();
 	
 	}
@@ -619,7 +620,6 @@ Rabbit = function(){
 		TweenMax.to( this.ass.rotation, sP, { x: .5, ease: Power4.easeOut, onComplete: function(){
 
 				_this.nod();
-				gameStatus = "readyToPlay";
 
 			} 
 
@@ -1069,13 +1069,15 @@ function gameOver(){
 	gameOverField.className = "show";
 	gameStatus = "gameOver";
 
-	var submitScore = document.getElementById( "highscore ");
-
 	showScoreList();
 
-	submitScore.addEventListener( "submit", saveScore );
+	submitName.addEventListener( "mousedown", function(){
 
-	//rabbit.sit();
+		saveScore();
+		gameStatus = "readyToPlay";
+	
+	} );
+
 	rabbit.sit();
 
 	TweenMax.to(this, 1, {speed: 0 } );
@@ -1099,7 +1101,7 @@ function resetGame(){
 
 	speed = 4;
 	level = 1;
-	life = 4;
+	life = 1;
 	score = 0;
 
 	obstacle.mesh.visible = true;
@@ -1242,6 +1244,46 @@ function gameUI(){
 
 }
 
+function getScore(){
+
+	var gameScore = [];
+
+		gameScore_str = localStorage.getItem( 'CatchTheEgg' );
+
+
+	if( gameScore_str != null ){
+
+		gameScore = JSON.parse( gameScore_str );
+
+	}
+
+	return gameScore;
+
+};
+
+function showScoreList(){
+
+	var gameScore = getScore(),
+		table = document.getElementById( "scoreTable" ),
+		insertScore = table.getElementsByClassName( "scoreContainer" ),
+		tD = "";
+
+	gameScore.sort( function( a, b ){
+
+		return b - a;
+
+	} );
+
+	for( var i = 0; i < gameScore.length; i++ ){
+
+		tD += "<tr id='" + [i] + "'> <td>" + gameScore[i].name + "</td> <td>" + gameScore[i].hScore + "</td> </tr>";
+
+	}
+
+	insertScore.innerHTML = tD;
+
+}
+
 function saveScore(){
 
 	var finalScore = score,
@@ -1265,46 +1307,6 @@ function saveScore(){
 	return false;
 
 };
-
-function getScore(){
-
-	var gameScore = [];
-
-		gameScore_str = localStorage.getItem( 'CatchTheEgg' );
-
-
-	if( gameScore_str != null ){
-
-		gameScore = JSON.parse( gameScore_str );
-
-	}
-
-	return gameScore;
-
-};
-
-function showScoreList(){
-
-	var gameScore = getScore(),
-		scoreTable = document.getElementById( "scoreTable" ),
-		insertScore = scoreTable.getElementsByTagName( "tbody" ),
-		tD;
-
-	gameScore.sort( function( a, b ){
-
-		return b - a;
-
-	} );
-
-	for( var i = 0; i < gameScore.length; i++ ){
-
-		tD += "<tr id='" + [i] + "'> <td>" + gameScore[i].name + "</td> <td>" + gameScore[i].hScore + "</td> </tr>";
-
-	}
-
-	insertScore.innerHTML = tD;
-
-}
 
 function launchScreen(){};
 
