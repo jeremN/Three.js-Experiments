@@ -1316,11 +1316,8 @@ window.addEventListener( "load", initGame, false );
 /*
 TODO
 
-	=> highscore field 
-	=> save & score name
 	=> start screen
-	=> transition between gameOver rabbit sit() and replay rabbit run()
-	=> particles explosion when grabing chocolatee
+	=> reorganize code
 
 BONUS : add particles on start screen, detect browser compatibility
 
