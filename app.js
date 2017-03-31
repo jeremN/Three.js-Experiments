@@ -1057,6 +1057,7 @@ function initGame( event ){
 	createBonusParticles();
 	gameUI();
 	resetGame();
+	showScoreList();
 
 	//Render
 	loop();
@@ -1264,23 +1265,25 @@ function getScore(){
 function showScoreList(){
 
 	var gameScore = getScore(),
-		table = document.getElementById( "scoreTable" ),
-		insertScore = table.getElementsByClassName( "scoreContainer" ),
+		table = document.getElementById( "scoreContainer" ),
 		tD = "";
 
 	gameScore.sort( function( a, b ){
 
-		return b - a;
+
+		return parseFloat( b.hScore ) - parseFloat( a.hScore );
 
 	} );
 
+	console.log(gameScore);
+
 	for( var i = 0; i < gameScore.length; i++ ){
 
-		tD += "<tr id='" + [i] + "'> <td>" + gameScore[i].name + "</td> <td>" + gameScore[i].hScore + "</td> </tr>";
+		tD += "<li id='" + [i] + "'> <span>" + gameScore[i].name + "</span> <span>" + gameScore[i].hScore + "</span> </li>";
 
 	}
 
-	insertScore.innerHTML = tD;
+	table.innerHTML = tD;
 
 }
 
@@ -1288,6 +1291,16 @@ function saveScore(){
 
 	var finalScore = score,
 		nameField = document.getElementById( "inputLastname" ).value;
+		noName = "NONAME";
+
+	if ( !nameField || nameField == null || nameField === " " ){
+
+		nameField = noName;
+	}
+	else{
+
+		nameField = nameField;
+	}
 
 	saveScore = {
 
