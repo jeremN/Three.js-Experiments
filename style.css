@@ -117,6 +117,18 @@ form{
     display: block;
   }
 
+ol{
+  list-style: none;
+}
+
+  ol > li > span{
+    width: 50%;
+    display: block;
+    float: left;
+    text-align: center;
+    margin: 0.5em auto;
+  }
+
 #startInstruction p{
   animation-name: flash;
   animation-duration: 2s;
