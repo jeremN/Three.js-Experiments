@@ -102,7 +102,7 @@ var scene,
 	camera, fov, aspectRatio, nearPlane, farPlane,
 	renderer, container;
 var	camPosStart = 150; 
-var camPosEnd = 230;
+var camPosEnd = 250;
 
 //Screen size
 var	wWidth = window.innerWidth;
@@ -649,6 +649,13 @@ Rabbit = function(){
 
 	Rabbit.prototype.sit = function(){
 
+		TweenMax.killTweensOf( rabbit.body.position );
+		TweenMax.killTweensOf( rabbit.body.rotation );
+		TweenMax.killTweensOf( rabbit.torso.position );
+		TweenMax.killTweensOf( rabbit.torso.rotation );
+		TweenMax.killTweensOf( rabbit.ass.position );
+		TweenMax.killTweensOf( rabbit.ass.rotation );
+
 		var _this = this;
 		var sP = 1.2;
 		this.status = "sit";
@@ -663,13 +670,15 @@ Rabbit = function(){
 
 		} );
 
+		TweenMax.to( this.body.position, sP, { y: 0, ease: Power4.easeOut } );
+
 		TweenMax.to( this.pawBackR.rotation, sP, { x: -4, ease: Power4.easeOut } );
 		TweenMax.to( this.pawBackR.position, sP, { y: 1, ease: Power4.easeOut } );
 		TweenMax.to( this.pawBackL.rotation, sP, { x: -4, ease: Power4.easeOut } );
 		TweenMax.to( this.pawBackL.position, sP, { y: 1, ease: Power4.easeOut } );
 
-		TweenMax.to( this.pawFrontR.position, sP, { y: .5, ease: Power4.easeOut } );
-		TweenMax.to( this.pawFrontL.position, sP, { y: .5, ease: Power4.easeOut } );
+		TweenMax.to( this.pawFrontR.position, sP, { y: 1, ease: Power4.easeOut } );
+		TweenMax.to( this.pawFrontL.position, sP, { y: 1, ease: Power4.easeOut } );
 
 	}
 
@@ -1223,7 +1232,7 @@ function gameOver(){
 	rabbit.sit();
 
 	TweenMax.to(this, 1, {speed: 0 } );
-	TweenMax.to( camera.position, 3, { z: camPosEnd, y: 50, x: -20 } );
+	TweenMax.to( camera.position, 2, { z: camPosEnd, y: 50, x: -20 }, "-=1.5" );
 
 	easterEgg.mesh.visible = false;
 	obstacle.mesh.visible = false;
