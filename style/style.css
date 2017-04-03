@@ -129,6 +129,12 @@ ol{
     margin: 0.5em auto;
   }
 
+#scoreTable{
+  position: absolute;
+  left: 25%;
+  top: 20%;
+}
+
 #startInstruction p{
   animation-name: flash;
   animation-duration: 2s;

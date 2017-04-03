@@ -1253,6 +1253,7 @@ function resetGame(){
 	gameStatus = "play";
 	rabbit.status = "rabbitRun";
 
+	gameUI();
 	rabbit.nod();
 	updateSpeed();
 	sInterval = setInterval( updateSpeed, freq );
@@ -1401,37 +1402,33 @@ function launchGame( event ){
 }
 
 
-window.addEventListener( "load", initGame, false );
+//Detector
+function detectWebGL(){
 
+	if( Detector.webgl ){
+
+		window.addEventListener( "load", initGame, false );
+
+	} 
+	else{
+
+	    var warning = Detector.getWebGLErrorMessage();
+
+	    document.getElementById( 'gameUI ' ).appendChild( warning );
+
+	}
+
+}
+
+detectWebGL();
 
 /*
 TODO
 	=>Check bug, anim etc...
 	=>Correct "sit" animation on gameOver
-	=>Correct css score table position
 
 BONUS
-	=>detect browser compatibility
 	=>maybe some particles on start screen
-*/
-
-/*
-Detect browser compatibility
-	//From three.js doc, https://threejs.org/docs/index.html#Manual/Getting_Started/Detecting_WebGL_and_browser_compatibility
-
-	if ( Detector.webgl ) {
-
-	    init();
-	    animate();
-
-	} 
-	else {
-
-	    var warning = Detector.getWebGLErrorMessage();
-
-	    document.getElementById( 'container' ).appendChild( warning );
-
-	}
 */
 
 
