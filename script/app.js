@@ -1252,7 +1252,7 @@ function resetGame(){
 
 	speed = 4;
 	level = 4;
-	life = 1;
+	life = 4;
 	score = 0;
 
 	obstacle.mesh.visible = true;
