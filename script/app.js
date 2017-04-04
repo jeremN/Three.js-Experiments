@@ -1107,6 +1107,7 @@ function mouseEvent( event ){
 	else if( gameStatus === "readyToPlay" ){
 
 		replay();
+		startField.className = "show";
 	}
 	else if( gameStatus === "readyToLaunch"){
 
@@ -1146,9 +1147,7 @@ function showScoreList(){
 
 	} );
 
-	//console.log(gameScore);
-
-	for( var i = 0; i < gameScore.length; i++ ){
+	for( var i = 0; i < 10; i++ ){
 
 		tD += "<li id='" + [i] + "'> <span>" + gameScore[i].name + "</span> <span>" + gameScore[i].hScore + "</span> </li>";
 
