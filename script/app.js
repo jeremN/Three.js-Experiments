@@ -117,7 +117,7 @@ var	delta = 0;
 var speed = 4; 
 var maxSpeed = 60;
 var score = 0;
-var life = 1;
+var life = 4;
 var level = 1;
 var collideEgg = 20;
 var collideRock = 10;
@@ -1251,7 +1251,7 @@ function resetGame(){
 	rabbit.mesh.position.z = 0;
 
 	speed = 4;
-	level = 1;
+	level = 4;
 	life = 1;
 	score = 0;
 
